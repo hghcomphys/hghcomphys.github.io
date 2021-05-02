@@ -13,25 +13,24 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-title: Personal website
-email: hghcomphys@gmail.com
-description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
+#title: Hossein Ghorbanfekr
+#email: hghcomphys@gmail.coms
+description: Personal website
 #twitter_username: username
 github_username: hghcomphys
-minimal_mistakes_skin: default
+minimal_mistakes_skin: air
 search: true
 
 # Build settings
 markdown: kramdown
 remote_theme: mmistakes/minimal-mistakes
 # Outputting
-permalink: /:categories/:title/
+#permalink: /:categories/:title/
 paginate: 5 # amount of posts to show
 paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+
+github: [metadata]
 
 include:
   - _pages
@@ -61,7 +60,11 @@ author:
   name   : "Hossein Ghorbanfekr"
   avatar : "/assets/images/bio-photo.jpg"
   bio    : "Researcher at VITO"
+  location: "Antwerp, Belgium"
   links:
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: "mailto:hghcomphys@gmail.com"
     - label: "Website"
       icon: "fas fa-fw fa-link"
       url: "https://hghcomphys.github.io"
@@ -85,7 +88,7 @@ footer:
       url: "https://www.linkedin.com/in/hossein-ghorbanfekr/"
 
 defaults:
-  # _posts
+  #_posts
   - scope:
       path: ""
       type: posts
@@ -96,7 +99,7 @@ defaults:
       comments: true
       share: true
       related: true
-  # _pages
+  #_pages
   - scope:
       path: "_pages"
       type: pages
