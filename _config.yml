@@ -13,23 +13,30 @@
 # you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
-#title: Hossein Ghorbanfekr
-#email: hghcomphys@gmail.coms
-description: Personal website
-#twitter_username: username
-github_username: hghcomphys
+locale : "en-US"
+title: "Hossein Ghorbanfekr" #Fun in Science #Fun in Computing #
+# name: "Hossein Ghorbanfekr"
+# email: hgh.comphys@gmail.coms
+subtitle: "Personal blog"
+description: "Personal blog"
+github_username: "hghcomphys"
+site_url: https://hghcomphys.github.io
+# baseurl : "/hghcomphys"
+# repository: "hghcomphys/hghcomphys" 
 minimal_mistakes_skin: air
 search: true
+words_per_minute: 200
+teaser: /assets/images/cover.jpg
 
 # Build settings
 markdown: kramdown
 remote_theme: mmistakes/minimal-mistakes
 # Outputting
 #permalink: /:categories/:title/
-paginate: 5 # amount of posts to show
+paginate: 5 # amount of posts to show 
 paginate_path: /page:num/
 timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-
+timezone: Europe/Brussels
 github: [metadata]
 
 include:
@@ -94,11 +101,12 @@ defaults:
       type: posts
     values:
       layout: single
-      author_profile: true
+      author_profile: false
       read_time: true
       comments: true
-      share: true
+      share: false
       related: true
+      show_date: true
   #_pages
   - scope:
       path: "_pages"
