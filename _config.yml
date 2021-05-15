@@ -14,11 +14,11 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 locale : "en-US"
-title: "Hossein Ghorbanfekr" #Fun in Science #Fun in Computing #
+title: "Fun in Computing"
+subtitle: "A blog by Hossein Ghorbanfekr"
 # name: "Hossein Ghorbanfekr"
 # email: hgh.comphys@gmail.coms
-subtitle: "Personal blog"
-description: "Personal blog"
+description: "Fun in Computing: A blog by Hossein Ghorbanfekr"
 github_username: "hghcomphys"
 site_url: https://hghcomphys.github.io
 # baseurl : "/hghcomphys"
@@ -35,8 +35,7 @@ remote_theme: mmistakes/minimal-mistakes
 #permalink: /:categories/:title/
 paginate: 5 # amount of posts to show 
 paginate_path: /page:num/
-timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-timezone: Europe/Brussels
+timezone: Europe/Brussels # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 github: [metadata]
 
 include:
