@@ -1,9 +1,9 @@
 ---
 permalink: /about/
-title: "About me"
+title: "about me"
 ---
 
-I have Ph.D. in computational physics and currently working as a researcher at [VITO](https://vito.be/en) Data Science Hub with a focus on high-performance computing, machine learning techniques, and AI software development.
+My name is Hossein Ghorbanfekr. I have Ph.D. in computational physics and currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)) Data Science Hub with a focus on high-performance computing, machine learning techniques, and AI software development.
 
 <!-- As a data scientist with a background in computational physics, I have experience in scientific software development and optimization, machine learning, and molecular dynamics simulations. A team player who has accomplished several types of collaborative research some of which were published in high-impact scientific journals such as Nature. -->
 
