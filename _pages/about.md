@@ -5,10 +5,10 @@ title: "About me"
 
 My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
 
-<!-- <figure>
+<figure>
 <img src="{{ '/assets/images/rasht.jpg' | relative_url }}" alt="Rasht Municipality Mansion">
 <figcaption>Rasht municipality mansion in an autumn night (source Wikipedia).</figcaption>
-</figure> -->
+</figure>
 
 I completed my Ph.D. in computational physics at [University of Antwerp](https://www.uantwerpen.be/en/) in Belgium.
 
