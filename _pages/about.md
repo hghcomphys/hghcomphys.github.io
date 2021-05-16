@@ -1,9 +1,21 @@
 ---
 permalink: /about/
-title: "about me"
+title: "About me"
 ---
 
-My name is Hossein Ghorbanfekr. I have Ph.D. in computational physics and currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)) Data Science Hub with a focus on high-performance computing, machine learning techniques, and AI software development.
+My name is Hossein Ghorbanfekr. I am originally from [_Rasht_](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
+
+<figure>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Rasht_Municipality_Mansion_in_an_Autumn_night.jpg/1280px-Rasht_Municipality_Mansion_in_an_Autumn_night.jpg" alt="Rasht Municipality Mansion">
+<figcaption>Rasht municipality mansion in an autumn night (source wikipedia).</figcaption>
+</figure>
+
+I completed my Ph.D. in computational physics at [University of Antwerp](https://www.uantwerpen.be/en/) in Belgium.
+
+I am currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on 
+* High-performance computing
+* Machine learning techniques
+* (AI) software development
 
 <!-- As a data scientist with a background in computational physics, I have experience in scientific software development and optimization, machine learning, and molecular dynamics simulations. A team player who has accomplished several types of collaborative research some of which were published in high-impact scientific journals such as Nature. -->
 
@@ -23,4 +35,3 @@ My name is Hossein Ghorbanfekr. I have Ph.D. in computational physics and curren
   <img src="{{ '/assets/images/cover.jpg' | relative_url }}" alt="creating a new branch on GitHub">
 </figure>
  -->
-
