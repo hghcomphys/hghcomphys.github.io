@@ -3,7 +3,7 @@ permalink: /about/
 title: "About me"
 ---
 
-<!-- My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
+My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
 
 <figure>
 <img src="{{ '/assets/images/rasht.jpg' | relative_url }}" alt="Rasht Municipality Mansion">
@@ -15,8 +15,7 @@ I completed my Ph.D. in computational physics at [University of Antwerp](https:/
 I am currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on 
 * High-performance computing
 * Machine learning techniques
-* AI software development -->
-
+* AI software development
 
 
 
