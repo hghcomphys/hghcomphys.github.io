@@ -3,7 +3,7 @@ permalink: /about/
 title: "About me"
 ---
 
-My name is Hossein Ghorbanfekr. I am originally from [_Rasht_](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
+My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
 
 <!-- <figure>
 <img src="{{ '/assets/images/rasht.jpg' | relative_url }}" alt="Rasht Municipality Mansion">
