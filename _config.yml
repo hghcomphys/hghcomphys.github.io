@@ -15,7 +15,7 @@
 # in the templates via {{ site.myvariable }}.
 locale : "en-US"
 title: "Fun in Computing"
-subtitle: "A science & programming blog"
+subtitle: "A science and programming blog"
 # name: "Hossein Ghorbanfekr"
 # email: hgh.comphys@gmail.coms
 description: "Fun in Computing: A blog by Hossein Ghorbanfekr"

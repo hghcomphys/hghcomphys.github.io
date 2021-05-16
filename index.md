@@ -18,7 +18,7 @@ Hi there, and welcome to my blog!
 
 Here, you'll find my openly shared technical notes and codes about data science, computational software development, and simulational physics.
 
-Hope you find it useful [:)] 
+Hope you find it useful :) 
 <!-- and having fun too -->
 
 Stay tuned...
