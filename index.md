@@ -9,16 +9,16 @@ title: "Fun in Computing"
 excerpt: "A blog by Hossein Ghorbanfekr"
 header:
   overlay_image: /assets/images/cover.jpg
-  overlay_filter: 0.2 # same as adding an opacity of 0.5
+  overlay_filter: 0.2 
   teaser: /assets/images/bio-photo.jpg
 toc: true
 ---
 
 Hi there, and welcome to my blog!
 
-Here you'll find my openly shared technical notes about data science and physics.
+Here, you'll find my openly shared technical notes and codes about data science, computational software development, and simulational physics.
 
-Hope you find it useful :) 
+Hope you find it useful [:)] 
 <!-- and having fun too -->
 
 Stay tuned...

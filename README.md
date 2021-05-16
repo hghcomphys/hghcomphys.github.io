@@ -1,2 +1,1 @@
-# Personal Blog
-The code repository for my personal blog: [https://hghcomphys.github.io](https://hghcomphys.github.io/)
+The code repository for my blog ["Fun in Computing"](https://www.funincomputing.com).
