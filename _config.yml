@@ -15,9 +15,9 @@
 # in the templates via {{ site.myvariable }}.
 locale : "en-US"
 title: "Fun in Computing"
-subtitle: "A science & programming blog" #"A blog by Hossein Ghorbanfekr"
+subtitle: "funincomputing.com" #"A science & programming blog" #"A blog by Hossein Ghorbanfekr"
 # title_separator: "-"
-# name: "Hossein Ghorbanfekr"
+name: "Hossein Ghorbanfekr"
 description: "Fun in Computing: A blog by Hossein Ghorbanfekr"
 github_username: "hghcomphys"
 site_url: https://hghcomphys.github.io
@@ -26,19 +26,18 @@ site_url: https://hghcomphys.github.io
 minimal_mistakes_skin: air
 search: true
 words_per_minute: 200
-teaser: /assets/images/cover.jpg
+#teaser: /assets/images/cover.jpg
 
 # Build settings
 markdown: kramdown
 remote_theme: mmistakes/minimal-mistakes
-# lsi: false
-# excerpt_separator: "\n\n"
+lsi: false
+excerpt_separator: "\n\n"
 incremental: false
 # Outputting
-#permalink: /:categories/:title/
+permalink: /:title/ #/:categories/:title/
 paginate: 5 # amount of posts to show 
 paginate_path: /page:num/
-timezone: # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 timezone: Europe/Brussels
 github: [metadata]
 
@@ -83,30 +82,31 @@ author:
   bio    : "Researcher at VITO"
   location: "Antwerp, Belgium"
   links:
+    - label: "LinkdedIn"
+      icon: "fab fa-fw fa-linkedin"
+      url: "https://www.linkedin.com/in/hossein-ghorbanfekr/"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/hghcomphys"
+    - label: "Website"
+      icon: "fas fa-fw fa-link"
+      url: "https://hghcomphys.github.io"
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
       url: "mailto:hghcomphys@gmail.com"
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://github.com/hghcomphys"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/hghcomphys"
-    - label: "LinkdedIn"
-      icon: "fab fa-fw fa-linkedin"
-      url: "https://www.linkedin.com/in/hossein-ghorbanfekr/"
 
 footer:
   links:
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://github.com/hghcomphys"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/hghcomphys"
     - label: "LinkdedIn"
       icon: "fab fa-fw fa-linkedin"
       url: "https://www.linkedin.com/in/hossein-ghorbanfekr/"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/hghcomphys"
+    - label: "Website"
+      icon: "fas fa-fw fa-link"
+      url: "https://hghcomphys.github.io"
+    
 
 defaults:
   #_posts
@@ -117,7 +117,7 @@ defaults:
       layout: single
       author_profile: false
       read_time: true
-      comments: true
+      comments: #true
       share: false
       related: true
       show_date: true

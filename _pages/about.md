@@ -12,7 +12,7 @@ My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedi
 
 I completed my Ph.D. in computational physics at [University of Antwerp](https://www.uantwerpen.be/en/) in Belgium.
 
-I am currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on 
+I am currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on topics:
 * High-performance computing
 * Machine learning techniques
 * AI software development
