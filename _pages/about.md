@@ -11,13 +11,13 @@ My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedi
 </figure>
 
 I completed my Ph.D. in computational physics at [University of Antwerp](https://www.uantwerpen.be/en/) in Belgium.
+In the past, I conducted computational studies on structural and dynamical properties of nano-confined water in 2D-material membranes within the framework of machine learning molecular dynamics simulations.
 
-I am currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on topics:
-* High-performance computing
-* Machine learning techniques
-* AI software development
+I am currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on High-performance computing, machine learning techniques, and AI software development.
 
-
+I think this would be enough about me as this blog is not intended to be a resume. 
+For more information please see my [LinkedIn](https://www.linkedin.com/in/hossein-ghorbanfekr/) profile.
+{: .notice--info}
 
 <!-- 
 [![Support via PayPal](https://cdn.jsdelivr.net/gh/twolfson/paypal-github-button@1.0.0/dist/button.svg)]()

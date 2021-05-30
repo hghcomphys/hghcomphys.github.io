@@ -5,10 +5,10 @@
 layout: home
 pagination:
   enabled: true
-author_profile: false
+author_profile: true
 permanentlink: /
 title: "Fun in Computing"
-excerpt: "A blog by Hossein Ghorbanfekr"
+excerpt: "A science & programming blog"
 header:
   overlay_image: /assets/images/cover.jpg
   overlay_filter: 0.2 
@@ -17,10 +17,11 @@ pagination:
   enabled: true
 ---
 
-Hi there, and welcome to my blog!
+Hi there, and welcome!
 
-Here, you'll find my openly shared technical notes and coding samples for the most part about scientific programming, machine learning, and physics.
+<!-- My name is Hossein Ghorbanfekr. -->
+Here you'll find my openly shared technical notes and coding samples for the most part about programming, hgh-performance computing, machine learning, and physics.
 
-Hope you find it useful :) 
+Hope you find them useful :) 
 
 
