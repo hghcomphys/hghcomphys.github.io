@@ -15,7 +15,7 @@ In the past, I conducted computational studies on structural and dynamical prope
 
 I am currently working as a researcher at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on High-performance computing, machine learning techniques, and AI software development.
 
-I think this would be enough about me as this blog is not intended to be a resume. 
+I think this would be enough about me as this blog is not intended to be my resume. 
 For more information please see my [LinkedIn](https://www.linkedin.com/in/hossein-ghorbanfekr/) profile.
 {: .notice--info}
 

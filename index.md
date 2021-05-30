@@ -19,9 +19,8 @@ pagination:
 
 Hi there, and welcome!
 
-<!-- My name is Hossein Ghorbanfekr. -->
-Here you'll find my openly shared technical notes and coding samples for the most part about programming, hgh-performance computing, machine learning, and physics.
+My name is Hossein Ghorbanfekr. In this blog, you'll find my openly shared technical notes and coding samples for the most part about programming, hgh-performance computing, machine learning, and physics.
 
-Hope you find them useful :) 
+Hope you find it useful and having fun too :) 
 
 

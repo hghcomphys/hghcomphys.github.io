@@ -10,7 +10,7 @@ tags:
 #   - Environment Modules
 header:
   image: &image "https://github.com/hghcomphys/raspi-hpc-cluster/blob/master/docs/raspi_cluster.JPG?raw=true"
-  caption: ""
+  caption: "Raspberry-Pi Nodes"
   teaser: *image
 # link: https://github.com/hghcomphys/raspi-hpc-cluster
 ---
