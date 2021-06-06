@@ -38,7 +38,7 @@ lsi                     : false
 excerpt_separator       : "\n\n"
 incremental             : false
 # Outputting
-permalink               : /:title/ #/:categories/:title/
+permalink               : /:title/ #/:categories/:title/ 
 paginate                : 5 # amount of posts to show 
 paginate_path           : /page:num/
 timezone                : Europe/Brussels
@@ -78,6 +78,17 @@ plugins:
   - jekyll-feed
   - jemoji
   - jekyll-include-cache
+
+analytics:
+  provider: "google"
+  google:
+    tracking_id: "G-LM1QGB4HYS"
+    anonymize_ip: false # default
+
+comments:
+  provider: "disqus" # false (default)
+  disqus:
+    shortname: https://funincomputing.disqus.com/
 
 author:
   name   : "Hossein Ghorbanfekr"
@@ -119,7 +130,7 @@ defaults:
       layout: single
       author_profile: false
       read_time: true
-      comments: #true
+      comments: true
       share: false
       related: true
       show_date: true
