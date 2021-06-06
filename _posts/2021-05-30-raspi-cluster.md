@@ -13,7 +13,7 @@ header:
   caption: "Raspberry-Pi Nodes"
   teaser: *image
 # link: https://github.com/hghcomphys/raspi-hpc-cluster
-classes: wide
+# classes: wide
 # toc: true
 # toc_label: "Table of Contents"
 # toc_icon: "cog"
