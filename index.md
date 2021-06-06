@@ -12,14 +12,22 @@ excerpt: "A science & programming blog"
 header:
   overlay_image: /assets/images/cover.jpg
   overlay_filter: 0.2 
-  caption: "Computer Simulation: Water Molecules & Graphene"
+  caption: "Computer simulation: Water Molecules & Graphene"
 pagination:
   enabled: true
+classes: wide
+# sidebar:
+#   - title: "Title"
+#     image: http://placehold.it/350x250
+#     image_alt: "image"
+#     text: "Some text here."
+#   - title: "Another Title"
+#     text: "More text here."
 ---
 
 Hi there, and welcome!
 
-My name is Hossein Ghorbanfekr. In this blog, you'll find my openly shared technical notes and coding samples for the most part about programming, hgh-performance computing, machine learning, and physics.
+My name is Hossein Ghorbanfekr. On this blog, you'll find my openly shared technical notes and coding samples for the most part about _programming_, _hgh-performance computing_, _machine learning_, and _physics_.
 
 Hope you find it useful and having fun too :) 
 

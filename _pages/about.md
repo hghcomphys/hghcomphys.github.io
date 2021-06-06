@@ -1,6 +1,7 @@
 ---
 permalink: /about/
 title: "About me"
+classes: wide
 ---
 
 My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
