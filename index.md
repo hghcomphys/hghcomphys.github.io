@@ -8,7 +8,7 @@ pagination:
 author_profile: true
 permanentlink: /
 title: "Fun in Computing"
-excerpt: "A science & programming blog"
+excerpt: "A scientific computing blog"
 header:
   overlay_image: /assets/images/cover.jpg
   overlay_filter: 0.2 
@@ -27,7 +27,7 @@ classes: wide
 
 Hi there, and welcome!
 
-My name is Hossein Ghorbanfekr. On this blog, you'll find my openly shared technical notes and coding samples for the most part about _programming_, _hgh-performance computing_, _machine learning_, and _physics_.
+My name is Hossein Ghorbanfekr. On this blog, you'll find my openly shared technical notes and coding samples for the most part about _programming_, _hgh-performance computing_, _machine learning_, and _simulational physics_.
 
 Hope you find it useful and having fun too :) 
 
