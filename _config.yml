@@ -88,7 +88,7 @@ analytics:
 comments:
   provider: "disqus" # false (default)
   disqus:
-    shortname: "funincomputing" #https://funincomputing.disqus.com/
+    shortname: "funincomputing" #https://funincomputing.disqus.com
 
 author:
   name   : "Hossein Ghorbanfekr"

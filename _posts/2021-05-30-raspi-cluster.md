@@ -1,7 +1,7 @@
 ---
 title: "Setup a Raspberry-Pi HPC Cluster"
 categories:
-  - High Performance Computing
+  - High-performance computing
 tags:
   - Slurm
   - Raspberry Pi

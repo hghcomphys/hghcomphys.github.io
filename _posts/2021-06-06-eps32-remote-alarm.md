@@ -3,7 +3,7 @@ title: "Create a GSM Remote Alarm System"
 categories:
   - Electronics
 tags:
-  - Smart Home
+  - Smart home
   - ESP32
   - C++
 header:
