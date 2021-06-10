@@ -5,7 +5,7 @@ classes: wide
 ---
 
 My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
-I am living in [Antwerp](https://en.wikipedia.org/wiki/Antwerp), Belgium since 2015.
+Since 2015, I am living in [Antwerp](https://en.wikipedia.org/wiki/Antwerp), _Belgium_.
 
 <figure>
 <img src="{{ '/assets/images/rasht.jpg' | relative_url }}" alt="Rasht Municipality Mansion">
@@ -18,7 +18,8 @@ In the past, I conducted computational studies on structural and dynamical prope
 
 I am currently working as a research data scientist at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on High-performance computing, machine learning techniques, and AI software development.
 
-I think this would be enough about me as this blog is not intended to be my resume. 
+I think this would be enough about me.
+ <!-- as this blog is not intended to be my resume.  -->
 For more information please see my [LinkedIn](https://www.linkedin.com/in/hossein-ghorbanfekr/) profile.
 {: .notice--info}
 
