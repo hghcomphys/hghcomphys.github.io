@@ -2,7 +2,7 @@
 The code repository for [www.funincomputing.com](https://www.funincomputing.com).
 
 
-## Current features
+## Features
 
 - [Minimal Mistakes](https://mmistakes.github.io/minimal-mistakes/) theme 
     - Command to built on a local machine\
@@ -17,3 +17,4 @@ Analytics are disabled by default in development. To enable when testing/buildin
 - Using different [layouts](https://mmistakes.github.io/minimal-mistakes/docs/layouts/#home-page-layout)
 
 - [Disqus](https://disqus.com/) comments provider
+- add _LaTeX_ support to Markdown
