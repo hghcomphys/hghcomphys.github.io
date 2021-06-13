@@ -4,10 +4,8 @@ categories:
   - High-performance computing
 tags:
   - Slurm
-  - Raspberry Pi
+  - Raspberry-pi
   - Jupyterhub
-#   - Conda
-#   - Environment Modules
 header:
   image: &image "https://github.com/hghcomphys/raspi-hpc-cluster/blob/master/docs/raspi_cluster.JPG?raw=true"
   caption: "Raspberry-Pi Nodes"
