@@ -25,7 +25,7 @@ github_username         : "hghcomphys"
 url                     : "http://www.funincomputing.com"
 baseurl                 : # the subpath of your site, e.g. "/blog"
 repository              : "hghcomphys/hghcomphys" 
-minimal_mistakes_skin   : air
+minimal_mistakes_skin   : #air
 search                  : true
 words_per_minute        : 200
 log                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
@@ -128,7 +128,7 @@ defaults:
       type: posts
     values:
       layout: single
-      author_profile: false
+      author_profile: true
       read_time: true
       comments: false
       share: false
