@@ -30,6 +30,6 @@ Hi there, and welcome!
 <!-- My name is Hossein Ghorbanfekr.  -->
 On this blog, you'll find my openly shared technical notes and coding examples for the most part about _programming_, _hgh-performance computing_, _machine learning_, and _simulational physics_.
 
-Hope you find it useful and having fun too :) 
+Hope you find this useful and having fun too :bowtie: 
 
 

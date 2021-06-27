@@ -7,13 +7,13 @@ classes: wide
 My name is Hossein Ghorbanfekr. I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
 Since 2015, I am living in [Antwerp](https://en.wikipedia.org/wiki/Antwerp), _Belgium_.
 
-<figure>
+<figure> 
+ <!-- style="width: 600px" class="align-center"> -->
 <img src="{{ '/assets/images/rasht.jpg' | relative_url }}" alt="Rasht Municipality Mansion">
-<!-- <img src="https://www.nightflow.com/wp-content/uploads/2020/12/Antwerp-at-Night2.jpg" alt="Rasht Municipality Mansion"> -->
 <figcaption>Rasht municipality mansion in an autumn night (source Wikipedia).</figcaption>
 </figure>
 
-I completed my Ph.D. in physics at [University of Antwerp](https://www.uantwerpen.be/en/).
+I did my Ph.D. in physics at [University of Antwerp](https://www.uantwerpen.be/en/).
 In the past, I conducted computational studies on structural and dynamical properties of nano-confined water in 2D-material membranes within the framework of machine learning molecular dynamics simulations.
 
 I am currently working as a research data scientist at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on High-performance computing, machine learning techniques, and AI software development.
