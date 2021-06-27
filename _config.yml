@@ -27,7 +27,7 @@ baseurl                 : # the subpath of your site, e.g. "/blog"
 repository              : "hghcomphys/hghcomphys" 
 minimal_mistakes_skin   : #air
 search                  : true
-words_per_minute        : 200
+words_per_minute        : 100
 log                     : # path of logo image to display in the masthead, e.g. "/assets/images/88x88.png"
 masthead_title          : # overrides the website title displayed in the masthead, use " " for no title
 teaser                  : /assets/images/cover.jpg
@@ -93,7 +93,7 @@ comments:
 author:
   name   : "Hossein Ghorbanfekr"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "Researcher at VITO"
+  bio    : "Research data scientist @VITO"
   location: "Antwerp, Belgium"
   links:
     - label: "LinkdedIn"
