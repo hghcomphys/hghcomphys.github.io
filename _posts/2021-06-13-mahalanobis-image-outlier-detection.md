@@ -25,11 +25,7 @@ In this post, I will discuss how _Mahalanobis distance_ can be used to detect im
 Outliers are those sample images that don’t belong to a certain population. 
 We are particularly interested to identify those _known_ or _unknown_  populations that are out-of-distribution and potentially are considered as extreme cases for a deployed artificial intelligent model. 
 
-<!--  -->
-<!-- (MNIST) 
-(i.e. Fashion MNIST and CIFAR10 datasets) -->
-
-<!-- # Background -->
+<!-- ## Background -->
 
 ### Importance of outlier detection
 Deep neural networks (NNs) are powerful algorithms that have recently achieve impressive accuracies in various domains as wide as bioinformatics, disease diagnosis, waste management, and material novel material discovery. 
@@ -37,7 +33,12 @@ However, due to their intrinsic black box architecture, NNs exhibit an inclinati
 If an AI algorithm makes overconfident incorrect predictions then the consequences can be harmful or even 
 catastrophic, for instance in the context of healthcare. 
 
-This is exactly where outlier detection (OD) becomes crucial for practical applications by helping us to identify abnormal samples that are drawn far away from the distribution of the training samples and avoiding potentially wrong predictions.
+<figure style="width: 500px" class="align-center">
+  <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/outlier_retina.png" alt="">
+  <figcaption>A sample outlier in retina images in context of healthcare which can cause an AI algorithm makes overconfident incorrect predictions.</figcaption>
+</figure> 
+
+This is exactly where outlier detection (OD) becomes crucial for practical applications by helping us to identify anomalies that are drawn far away from the distribution of the training samples and avoiding potentially wrong predictions.
 
 **Note:** Here we are interested in detecting out-of-distribution samples but those are not the only types of outliers. 
 More about different types of outliers can be found [here](https://towardsdatascience.com/outliers-analysis-a-quick-guide-to-the-different-types-of-outliers-e41de37e6bf6).
@@ -48,13 +49,13 @@ Outlier detection is in addition used to assess and improve the robustness of an
 
 ### Mahalanobis distance
 Assume having a $N$ dimensional multivariate space that $N$ basically indicates the number of variables. Each sample in this space is represented by a point and it is a vector $x=(x_1, x_2, ..., x_N)^T$.
-Then the Mahalanobis distance $D$ of any point $x$ is defined as the relative distance to the centroid of data distribution and it is given by 
+Then the _Mahalanobis distance_ $D$ of any point $x$ is defined as the relative distance to the centroid of data distribution and it is given by 
 
 $$
 D(x) = \sqrt{ (x - \mu)^T V^{-1} (x - \mu) }, 
 $$ 
 
-where $\mu$ and $V$ are the mean and covariance matrix of the sample distribution, respectively.
+where $\mu$ and $V$ are the `mean` and `covariance matrix` of the sample distribution, respectively.
 The larger $D(x)$, the further away from the centroid the data point $x$ is.
 
 A sample is identified as an outlier if its evaluated Mahalanobis distance, namely outlier score, is larger than a hard threshold obtained from the training inlier samples. 
@@ -64,32 +65,36 @@ The threshold, in this post, is defined as $\mu + 2 \sigma$ where $\sigma$ is th
 ### Feature space
 <!-- Detecting outliers particularly in images is a difficult task. -->
 Mahalanobis distance (MD) analysis can be directly applied to the image data.
-However, it is better to employ it on the feature space encoded by a neural network which any sample in a feature vector intrinsically describing the appearance and relevant patterns for the labels present in the sample. 
+However, it is better to be used on the `feature space` which is in fact an alternative representation of the original image data
+in smaller dimensions encoded by a neural network. Any point in this space not only describing individual pixels but also intrinsically describing the appearance and relevant patterns for the labels present in the sample. 
 
-The below figure shows a schematic representation of a neural network which encodes an input images to a feature space. The feature extractor in fact is a representation of the original images but in a reduced dimension.\
-<!-- <img src="/assets/outlier-detection/images/feature_model.png" alt="drawing" width=500> -->
-<!-- ![feature-model]({{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/feature_model.png){: .align-center} -->
+
+The below figure shows a schematic view of a neural network which encodes an input images to a feature space. The feature extractor in fact is a representation of the original images but in a reduced dimension.\
 <figure style="width: 600px" class="align-center">
-  <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/feature_model.png" alt="">
+  <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/md_feature_model.png" alt="">
   <figcaption>Neural network as feature extractor maps an input image to a smaller feature space (x).</figcaption>
 </figure> 
 
 ## Code description
-In what follows, I explain some of important sections of the python implementation using `tensorflow.keras` which include data preparation, feature encoder, Mahalanobis outlier detector, results, and conclusions.
+In what follows, I explain some of the important sections of the python implementation using `tensorflow.keras` which include data preparation, feature encoder, Mahalanobis outlier detector, results, and conclusions.
 <!--  -->
-Access to all the discussed scripts and more is available via this [jupyter notebook](https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/outlier_detection_mahalanabis_distance.ipynb).
+Access to the entire script and more is available via this [jupyter notebook](https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/image_outlier_detection_mahalanobis_distance.ipynb).
 
 
 ### Data preparation
 We rescale image data between `[-1.0, 1.0]` and intentionally using an [image data generator](https://keras.io/api/preprocessing/image/) from the input _numpy_ array.
 The data generator is not necessary in this case as the size of the studied datasets is small (i.e. few megabytes). 
-However, in the real-world problem, we often work with big data which can not be fitted to the memory at once. An image data generator is a great tool that helps us to deal with numerous images for different tasks such as preprocessing, augmentation, training, and validation.
+However, in the real-world problem, we often work with big data which can not be fitted to the memory at once. An image data generator is a great tool that helps us to deal with a vast number of images for different tasks such as preprocessing, augmentation, training, and validation.
 
 #### Image data generator
-The below script shows the definitions of image-related functions in order to create an `image data generator` from the input image (`X`) and label (`y`) data. 
-We use image augmentations to reduce the chance of over-fitting while training the feature model.
+The below script shows the definitions of image-related functions to create an `image data generator` from the input image (`X`) and label (`y`) data. 
+<!--  -->
+We use `image augmentations`, creating a modified versions of images by randomly applying a range of transformations, to reduce the chance of over-fitting while training the feature model.
 _Keras_ `ImageDataGenerator` takes various image transformations (e.g. rightness, rotation, zoom) as input arguments. 
-The `one-hot` encoding is also used for the image labels.  
+<!--  -->
+The `one-hot` encoding is further used for the image labels.
+This basically creates a binary column for each digit.  
+
 ```python
 def scale(img):
     """
@@ -151,7 +156,7 @@ The utility function `get_dataset()` helps us to easily load different datasets 
   def get_dataset(name="mnist"):
     """
     Return the entire dataset as a tuple (X, y).
-    We need it in order to explicitly define the outlier population.
+    We need it to explicitly define the outlier population.
     """
     if name=="mnist":
         (X_train, y_train), (X_test, y_test) = tf.keras.datasets.mnist.load_data()
@@ -174,8 +179,9 @@ The utility function `get_dataset()` helps us to easily load different datasets 
 ```
 
 It might be asked why we need to concatenate the _training_ and _test_ datasets. 
-The answer is that for testing purposes we are interested in explicitly defined a _known_ outlier population (i.e. samples with label `9`, `8`). 
+The answer is that, only for testing purposes, we are interested in explicitly defined a _known_ outlier population (i.e. samples with label `9`, `8`). 
 This can be done by separating them from the entire dataset and then splitting the rest into the training and test sets.
+We further considering two `Fashion MNIST` and `CIFAR10` datasets as completely external set of _unknown_ outliers.
 ```python
 X, y = get_dataset()
 
@@ -188,12 +194,17 @@ X_inliers, y_inliers = X[~outlier_indices], y[~outlier_indices]
 X_train, X_test, y_train, y_test = train_test_split(X_inliers, y_inliers, test_size=0.20, random_state=2021)
 num_labels = len(np.unique(y_train))
 ```
-As the result, we have three sorts of data:
-- training set which contains image labels `0` to `7`
-- test set which contains image labels `0` to `7`
+Brining together, we have eventually three sorts of data:
+- training and test sets which contain image labels `0` to `7`
 - _known_ outlier set which contains image labels `8` and `9`
+- _unknown_ outliers belong to completely external datasets `Fashion MNIST` and `CIFAR10`
 
-**Note:** The training and test sets have no samples from the outlier set. This means the trained future model doesn't know anything about outlier sets. This provides us a set of outliers in order to validate our developed outlier detector. 
+<figure style="width: 500px" class="align-center">
+  <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/datasets.png" alt="">
+  <figcaption>Schematic representation of three different sorts of image data: training/test inliers, known outliers, and unknown outliers.</figcaption>
+</figure> 
+
+**Note:** The training and test sets have no samples from the outlier set. This means the later trained model doesn't know anything about outlier sets. This provides us a set of outliers to validate our outlier detector. 
 {: .notice--info}
 
 
@@ -205,11 +216,11 @@ We first need to build a NN classifier model which contains two main parts:
 After training the classifier using provided image labels. we will use the feature extractor part which already contains the trained weights. This way, all the relevant features from training samples learned by the feature extractor and therefore is used for the outlier detection.
 
 
-#### Building model
+#### Building feature extractor
 We employ a few `convolutional` layers and a `dense` layer on the top to build the feature extractor model. 
 The extended classifier model then is built using an additional dense layer with `softmax` activation functions. 
 
-**Transfer learning** is an alternative function for more advanced feature mapping.
+**INFO:** _Transfer learning_ is an alternative approach for developing a more advanced feature mapping instead of using the plain convolutional layers as discussed in this post.
 {: .notice--info}
 
 ```python
@@ -238,11 +249,11 @@ def build_custom_model():
 {: .notice--info}
 
 Please note that the `build_custom_model()` function returns two models with the shared set of weights: 
-classifier model and future extractor.
+1) classifier model 2) future extractor.
 
 
-#### Fitting model
-In order to find the right values of weights in the feature extractor model, the focus should be on the classifier model. We, therefore, compile the classifier using `adam` optimizer and `categorical crossentropy` loss function. Training and test (validation) batches used afterward to train the model.
+#### Fitting feature extractor
+To find the right values of weights in the feature extractor model, the focus should be on the classifier model. We, therefore, compile the classifier using `adam` optimizer and `categorical cross-entropy loss function. Afterward, the training and validation batches are used to fit the classifier model.
 ```python
 # Create NN which contains classifier and feature models
 clf, fm = build_custom_model()
@@ -269,7 +280,7 @@ clf.fit(
 
 ### Mahalanobis outlier detector
 If everything goes well, we should eventually have a (well-)trained feature model which extracts important features from the input image and map them to the feature space. 
-As the next step, we define a custom Mahalanobis outlier detector that accepts the feature extractor as an input model, and having `fit` and `predict` methods. 
+As the next step, we define a custom Mahalanobis outlier detector that accepts a pre-trained feature extractor model as an input, and having `fit` and `predict` methods. 
 ```python
 class MahalanobisOutlierDetector:
     """
@@ -347,19 +358,22 @@ class MahalanobisOutlierDetector:
         return scores
 ```
 
+#### Fitting detector
 Calling the `fit` method on training batches basically calculates the required `mean`, `covariance` matrix, and some statistics including `threshold` of Mahalanobis distance for inlier samples.
 ```python
 # Create and fit Mahalanobis outlier detector
 od = MahalanobisOutlierDetector(features_extractor=fm)
 od.fit(train_batches, steps=None, verbose=1)
 ```
+
+#### Detector predictions
 The `predict` method calculates the Mahalanobis distances as outlier scores for any given input batches on sample level.
 This allows us to calculate the outlier score for the training and validation sets using:
 ```python
 od_scores =  od.predict(val_batches, verbose=2)
 ```
 
-More interestingly, we can calculate the scores for the defined outlier population.
+More interestingly, we can calculate the scores for the defined known outlier population.
 ```python
 outlier_batches = create_datagen(X_outliers, y_outliers)
 od_scores = od.predict(outlier_batches, verbose=2)
@@ -369,7 +383,7 @@ Samples from Fashion `Fashion MNIST` and `CIFAR10` datasets are considered as `u
 
 
 ### Results and conclusions
-Here we are going to validate our fitted Mahalanobis outlier detector on different populations of the MNIST dataset and two external datasets including Fashion MNIST and CIFAR10 to check how well it performs on the task of detecting outliers. 
+Here we are going to validate our fitted Mahalanobis outlier detector on different populations of the MNIST dataset and two external datasets including Fashion MNIST and CIFAR10 to check how well it performs on the task aimed at detecting outliers. 
 The obtained results are presented in the below table.
 
 |       Subset       | Detected outlier | Mean score | Std score | Threshold | Samples |
@@ -380,10 +394,10 @@ The obtained results are presented in the below table.
 | Fashion MNIST      |      59.62%      |    11.79   |    2.1    |   11.50   |  69968  |
 | CIFAR10            |      24.74%      |    10.35   |    1.79   |   11.50   |  60000  |
 
-First, it is interesting to note that the Mahalanobis detector only detects `2.52%` of the population as outliers for the training MNIST samples. It expectedly gives a similar value of `2.73` for the validation samples and detecting 9-23x more outliers for the MNIST outlier, Fashion MNIST, and CIFAR10 datasets with corresponding values of `23.26%`, `59.62%`, and `24.74%`.
+Firstly, it is interesting to note that the Mahalanobis detector only detects `2.52%` of the population as outliers for the training MNIST samples. It expectedly gives a similar value of `2.73` for the validation samples.
+However, it detects more outliers for the MNIST outlier, Fashion MNIST, and CIFAR10 datasets with corresponding values of `23.26%`, `59.62%`, and `24.74%`.
 This clearly shows that the Mahalanobis detector enables us to detect outliers either there exist within the studied dataset or completely external datasets.
 Secondly, the mean outlier score (i.e Mahalanobis distance) is found to be larger for outliers than those inliers of which used for training and test.
-<!-- <img src="/assets/outlier-detection/images/md_score_barplot.png" alt="drawing" width=600> -->
 <figure style="width: 600px" class="align-center">
   <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/md_score_barplot.png" alt="">
   <figcaption>Mean outlier score for various populations of MNIST (training), MNIST(validation), MNIST (known outlier), Fashion MNIST (unknown outlier), and CIFAR10 (unknown outlier).</figcaption>
@@ -391,9 +405,8 @@ Secondly, the mean outlier score (i.e Mahalanobis distance) is found to be large
 
 
 Further insights can be obtained by considering the distributions of the scores and focusing on the overlapping samples as shown in the next figure which is in fact the overlaid box and violin plots of the outlier score for different populations of MNIST (training), MNIST(validation), MNIST (known outlier), Fashion MNIST (unknown outlier), and CIFAR10 (unknown outlier). 
-The figure reveals that there exist still some outliers that their score is small as compared with inliers, Or samples within the training sets of which their scores is beyond the threshold.
+The figure reveals that there exist still some outliers that their score is small as compared with the inlier scores, Or samples within the training sets of which their scores is beyond the threshold.
 This basically means that  Mahalanobis detector unable to identify all outliers but fraction of them and only working to some extent.
-<!-- <img src="/assets/outlier-detection/images/md_score_boxplot.png" alt="drawing" width=600> -->
 <figure style="width: 600px" class="align-center">
   <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/md_score_boxplot.png" alt="">
   <figcaption>An overlaid box and violin plots of outlier scores for various populations of MNIST (training), MNIST(validation), MNIST (known outlier), Fashion MNIST (unknown outlier), and CIFAR10 (unknown outlier).</figcaption>
@@ -401,14 +414,13 @@ This basically means that  Mahalanobis detector unable to identify all outliers 
 
 The corresponding histogram plot of the outlier scores represents better the overlap regions.  
 Nevertheless, detecting the shifts in data distribution due to outliers is pretty much obvious in the two previous  figures.
-<!-- <img src="/assets/outlier-detection/images/md_score_histplot.png" alt="drawing" width=600> -->
 <figure style="width: 600px" class="align-center">
   <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/md_score_histplot.png" alt="">
   <figcaption>The corresponding histogram plot shows the shift in data distribution particularly for the Fashion MNIST population.</figcaption>
 </figure> 
  
 
-**INFO:** The jupyter notebook of the discussed script in this post can be found [here](https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/outlier_detection_mahalanabis_distance.ipynb).
+**INFO:** The jupyter notebook of the discussed script in this post can be found [here](https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/image_outlier_detection_mahalanobis_distance.ipynb).
 {: .notice--info}
 
 
