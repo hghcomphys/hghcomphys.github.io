@@ -70,9 +70,9 @@ in smaller dimensions encoded by a neural network. Any point in this space not o
 
 
 The below figure shows a schematic view of a neural network which encodes an input images to a feature space. The feature extractor in fact is a representation of the original images but in a reduced dimension.\
-<figure style="width: 600px" class="align-center">
+<figure style="width: 500px" class="align-center">
   <img src="{{ site.url }}{{ site.baseurl }}/assets/outlier-detection/images/md_feature_model.png" alt="">
-  <figcaption>Neural network as feature extractor maps an input image to a smaller feature space (x).</figcaption>
+  <figcaption>A deep neural network as feature extractor maps an input image to a smaller feature space (x).</figcaption>
 </figure> 
 
 ## Code description
