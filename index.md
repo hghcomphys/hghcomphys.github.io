@@ -30,6 +30,13 @@ Hi there, and welcome!
 <!-- My name is Hossein Ghorbanfekr.  -->
 On this blog, you'll find my openly shared technical notes and coding examples for the most part about _programming_, _hgh-performance computing_, _machine learning_, and _simulational physics_.
 
-Hope you find this useful and having fun too :bowtie: 
+<!-- Why does this blog matters? -->
+I'm making my best effort to
+- go deeper into details of often discussed topics
+- focus on interdisciplinary topics that are less discussed
+- promote creativity through doing scientific & programming projects 
+
+
+Hope you find it useful and having fun too :bowtie: 
 
 
