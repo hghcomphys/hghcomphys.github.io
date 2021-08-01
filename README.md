@@ -18,3 +18,8 @@ Analytics are disabled by default in development. To enable when testing/buildin
 
 - [Disqus](https://disqus.com/) comments provider
 - add _LaTeX_ support to Markdown
+
+- Include videos
+    ```
+    {% include video id="IaU-Y2aWQnc" provider="youtube" %}
+    ```
