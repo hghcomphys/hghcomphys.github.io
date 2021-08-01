@@ -1,5 +1,5 @@
 ---
-title: "Setup a Raspberry-Pi HPC Cluster"
+title: "How to Setup a Raspberry-Pi HPC Cluster"
 categories:
   - High-performance computing
 tags:

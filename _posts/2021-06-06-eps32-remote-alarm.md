@@ -11,7 +11,7 @@ header:
   caption: "ESP32 Remote Alarm System"
   teaser: *image
 # link: https://github.com/hghcomphys/remote-alarm-system
-# classes: wide
+classes: wide
 # toc: true
 # toc_label: "Table of Contents"
 # toc_icon: "cog"
@@ -60,6 +60,7 @@ This module can be set in alarm mode by receiving an SMS command (e.g. "ALARM").
     - Arduino IDE with [ESP32 Add-on](https://randomnerdtutorials.com/installing-the-esp32-board-in-arduino-ide-windows-instructions/)
     - [Adafruit TFT display driver](https://github.com/adafruit/Adafruit_SSD1306) library
 
+
 #### Wiring
 The wiring ESP32 is as follows:
 - SIM800L GSM module:
@@ -76,7 +77,9 @@ The wiring ESP32 is as follows:
 - Buzzer pin ➡ G15
 - Push button ➡ G2
 
-**Note:** A large electrolytic capacitor (470 or 1000 uF) is certainly required in order to stabilize the GSM module with its current spike. It should be connected to the `GND` and `VCC` pins and as close as possible to the module.
+A large electrolytic capacitor (470 or 1000 uF) is certainly required in order to stabilize the GSM module with its current spike. It should be connected to the `GND` and `VCC` pins and as close as possible to the module.
+_Esp32 T-Call_ series with on-board _SIM800_ GSM module are also alternative hardware options for this project.
+More details can be found [here](https://github.com/Xinyuan-LilyGO/LilyGo-T-Call-SIM800).
 {: .notice--warning}
 
 #### Code adjustment
@@ -115,6 +118,7 @@ Other parameters work just fine with their default values but they can be also a
 
 For more details and the sketch (C++ source code) please see 
 [https://github.com/hghcomphys/remote-alarm-system](https://github.com/hghcomphys/remote-alarm-system)
+{: .notice--info}
 
 #### References
 Some useful links that part of this work is based on them are as follows: 
