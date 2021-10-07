@@ -16,7 +16,7 @@ Since 2015, I am living in [Antwerp](https://en.wikipedia.org/wiki/Antwerp), _Be
 I did my Ph.D. in physics at [University of Antwerp](https://www.uantwerpen.be/en/).
 In the past, I conducted computational studies on structural and dynamical properties of nano-confined water in 2D-material membranes within the framework of machine learning molecular dynamics simulations.
 
-I am currently working as a research data scientist at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on High-performance computing, machine learning techniques, and AI software development.
+I am currently working as a data scientist at _Flemish Institute for Technological Research_ ([VITO](https://vito.be/en)), _Data Science Hub_, with a focus on High-performance computing, machine learning techniques, and AI software development.
 
 That's pretty much all there is to know about me.
 
