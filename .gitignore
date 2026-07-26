@@ -4,3 +4,6 @@ _site
 Gemfile.lock
 .ipynb_checkpoints/
 archive/
+# pixi environments
+.pixi/*
+!.pixi/config.toml

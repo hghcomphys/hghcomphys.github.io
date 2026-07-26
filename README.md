@@ -1,4 +1,4 @@
-# Fun in Computing
+# Personal site 
 <!-- The code repository for [www.funincomputing.com](https://www.funincomputing.com). -->
 
 

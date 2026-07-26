@@ -7,8 +7,8 @@ pagination:
   enabled: true
 author_profile: true
 permanentlink: /
-title: "Fun in Computing"
-excerpt: "A scientific computing blog"
+title: "Hossein Ghorbanfekr"
+excerpt: "A personal blog"
 header:
   overlay_image: /assets/images/cover.jpg
   overlay_filter: 0.2 
@@ -27,16 +27,17 @@ classes: wide
 
 Hi there, and welcome!
 
-<!-- My name is Hossein Ghorbanfekr.  -->
-On this blog, you'll find my openly shared technical notes and coding examples for the most part about _programming_, _high-performance computing_, _machine learning_, and _simulational physics_.
+My name is Hossein Ghorbanfekr. 
 
-<!-- Why does this blog matters? -->
-I'm making my best effort to
-- focus on interdisciplinary topics that are less discussed
-- go deeper into details of often discussed topics
-- promote creativity through doing fun projects 
+I'm a research scientist at IMEC, working on computational methods for drug discovery. 
+I am also interested in developing open-source scientific software.
 
+Before, I worked at VITO as an HPC engineer and data Scientist, focusing on deep learning for image analysis and domain-specific language models. 
+I also managed HPC systems and developed expertise in GPU computing and low-level performance optimization. 
+During my PhD and postdoctoral research, I used molecular dynamics simulations to study the structural and dynamical properties of nano-membranes for water filtration applications.
 
-Hope you find it useful and having fun too :bowtie: 
+On this blog, you'll find my openly shared technical notes and coding examples for the most part about _molecular simulations, _high-performance computing_, and _machine learning_.
+
+Hope you find them useful and having fun too :)
 
 
