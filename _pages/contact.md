@@ -21,8 +21,9 @@ classes: wide
 <!-- That's pretty much all there is to know about me. -->
 <!---->
 <!-- I think this would be enough about me. -->
- <!-- as this blog is not intended to be my resume.  -->
-For more information please see my [LinkedIn](https://www.linkedin.com/in/hossein-ghorbanfekr/) profile.
+<!-- as this blog is not intended to be my resume.  -->
+
+For more information please see my [LinkedIn](https://www.linkedin.com/in/hossein-ghorbanfekr/).
 {: .notice--info}
 
 <!-- 

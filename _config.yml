@@ -94,8 +94,8 @@ comments:
 author:
   name   : "Hossein Ghorbanfekr"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "Data Scientist at VITO"
-  location: "Antwerp, Belgium"
+  bio    : "Research Scientist at IMEC"
+  location: "Belgium"
   links:
     - label: "LinkdedIn"
       icon: "fab fa-fw fa-linkedin"
