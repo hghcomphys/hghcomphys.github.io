@@ -16,11 +16,11 @@
 
 # Theme Settings
 locale                  : "en-US"
-title                   : "Hossein Ghorbanfekr"
-subtitle                : "hghcomphys.github.io" #"A science & programming blog" #"A blog by Hossein Ghorbanfekr"
+title                   : "" 
+subtitle                : "Personal site" 
 title_separator         : "-"
 name                    : "Hossein Ghorbanfekr"
-description             : "A blog by Hossein Ghorbanfekr"
+description             : #" by Hossein Ghorbanfekr"
 github_username         : "hghcomphys"
 url                     : "http://www.hghcomphys.github.io"
 baseurl                 : # the subpath of your site, e.g. "/blog"
@@ -28,10 +28,10 @@ repository              : "hghcomphys/hghcomphys"
 minimal_mistakes_skin   : #air
 search                  : true
 words_per_minute        : 100
-masthead_title          : # overrides the website title displayed in the masthead, use " " for no title
+masthead_title          : "Hossein Ghorbanfekr"
 teaser                  : /assets/images/cover.jpg
-logo                    : /assets/images/logo.png
-og_image                : /assets/images/logo.png
+# logo                    : /assets/images/logo.png
+# og_image                : /assets/images/logo.png
 # Build settings
 markdown                : kramdown
 remote_theme            : mmistakes/minimal-mistakes
@@ -94,7 +94,7 @@ comments:
 author:
   name   : "Hossein Ghorbanfekr"
   avatar : "/assets/images/bio-photo.jpg"
-  bio    : "Research Scientist at IMEC"
+  bio    : "Interested in molecular simulations and high-performance computing"
   location: "Belgium"
   links:
     - label: "LinkdedIn"
