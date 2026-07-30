@@ -5,7 +5,7 @@ classes: wide
 ---
 
 I am originally from [Rasht](https://en.wikipedia.org/wiki/Rasht) the capital city of _Gilan Province_, _Iran_. Also known as the "City of Rain".
-Since 2015, I am living in [Antwerp](https://en.wikipedia.org/wiki/Antwerp), _Belgium_.
+Since 2015, I am living in _Belgium_.
 
 <figure> 
 <img style="width: 600px" class="align-center"> 
