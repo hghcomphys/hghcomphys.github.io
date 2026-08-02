@@ -17,8 +17,8 @@ classes: wide
 toc: true
 toc_label: "Table of Contents"
 # toc_icon: "cog"
-author_profile: true
-# layout: splash
+layout: splash
+author_profile: false
 ---
 
 <!-- I recently learned about outlier detection in context of medial image analysis.  -->

@@ -19,6 +19,8 @@ header:
 # classes:
 #   - landing
 #   - dark-theme
+layout: splash
+author_profile: false
 ---
 
 In this post, I explain steps on how to setup a __test__ but __scalable__  high-performance computing (HPC) cluster using [Raspberry Pi](https://en.wikipedia.org/wiki/Raspberry_Pi) and with a focus on data science. The experiences learned from this tutorial are intended to hopefully help you to build your real HPC cluster, e.g. with hundreds of compute nodes, which support both interactive and command-line interface.

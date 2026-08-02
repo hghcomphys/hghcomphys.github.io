@@ -17,7 +17,7 @@
 # Theme Settings
 locale                  : "en-US"
 title                   : "" 
-subtitle                : "Personal site" 
+subtitle                : "Personal website" 
 title_separator         : "-"
 name                    : "Hossein Ghorbanfekr"
 description             : #" by Hossein Ghorbanfekr"
@@ -25,7 +25,7 @@ github_username         : "hghcomphys"
 url                     : "http://www.hghcomphys.github.io"
 baseurl                 : # the subpath of your site, e.g. "/blog"
 repository              : "hghcomphys/hghcomphys" 
-minimal_mistakes_skin   : #air
+minimal_mistakes_skin   : air
 search                  : true
 words_per_minute        : 100
 masthead_title          : "Hossein Ghorbanfekr"
@@ -103,9 +103,9 @@ author:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/hghcomphys"
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://hghcomphys.github.io"
+    # - label: "Website"
+    #   icon: "fas fa-fw fa-link"
+    #   url: "https://hghcomphys.github.io"
     - label: "Email"
       icon: "fas fa-fw fa-envelope-square"
       url: "mailto:hghcomphys@gmail.com"
@@ -118,9 +118,9 @@ footer:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/hghcomphys"
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: "https://hghcomphys.github.io"
+    # - label: "Website"
+    #   icon: "fas fa-fw fa-link"
+    #   url: "https://hghcomphys.github.io"
     
 defaults:
   #_posts
@@ -129,7 +129,7 @@ defaults:
       type: posts
     values:
       layout: single
-      author_profile: true
+      author_profile: false
       read_time: true
       comments: false
       share: false
@@ -143,10 +143,10 @@ defaults:
       layout: single
       author_profile: true
 
-category_archive:
-  type: liquid
-  path: /categories/
+# category_archive:
+#   type: liquid
+#   path: /categories/
 
-tag_archive:
-  type: liquid
-  path: /tags/
+# tag_archive:
+#   type: liquid
+#   path: /tags/

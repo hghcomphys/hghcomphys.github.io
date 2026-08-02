@@ -19,6 +19,8 @@ classes: wide
 # classes:
 #   - landing
 #   - dark-theme
+layout: splash
+author_profile: false
 ---
 
 _GSM Remote Alarm System_ is an experimental implementation of a broader idea of how one can build a home alarm system.

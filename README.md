@@ -8,8 +8,9 @@
     - Command to built on a local machine\
         Using Jekyll with Bundler on a local machine:
         ```
-        $ bundle exec jekyll serve
+        $ pixi run bundle exec jekyll serve
         ```
+[Pixi](https://pixi.prefix.dev/latest/installation/) is used to manege dependencies.
 
 - Google analytics\
 Analytics are disabled by default in development. To enable when testing/building locally be sure to set `JEKYLL_ENV=production` to force the environment to production.

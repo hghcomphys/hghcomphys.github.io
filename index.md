@@ -13,7 +13,7 @@ excerpt: ""
 header:
   overlay_image: /assets/images/cover.jpg
   overlay_filter: 0.2 
-  caption: "Computer simulation: Water Molecules & Graphene"
+  caption: "Water molecules and graphene"
 pagination:
   enabled: true
 classes: wide
@@ -26,12 +26,19 @@ classes: wide
 #     text: "More text here."
 ---
 
+
+> The inside of a computer is as dumb as hell but it goes like mad!
+> <cite><a href="https://quotefancy.com/quote/1185459/Richard-P-Feynman-The-inside-of-a-computer-is-as-dumb-as-hell-but-it-goes-like-mad#:~:text=Richard%20P.,but%20it%20goes%20like%20mad!%E2%80%9D">Richard P. Feynman</a></cite>
+ 
+
 Hi there, and welcome!
 
 My name is Hossein. 
+
 I'm a research scientist at [IMEC](https://www.imec.be), working on computational methods for drug discovery.
 Before, I worked at [VITO](https://vito.be) as an HPC engineer and data scientist, built deep learning solutions for image analysis and domain-specific language models. I also managed HPC clusters and developed expertise in GPU computing and low-level profiling and performance optimization. 
 During my PhD and postdoctoral research, I used molecular dynamics simulations to study the structural and dynamical properties of nano-membranes for water filtration applications.
+
 
 
 On this website, I share my notes, experiments, and insights on topics I enjoy working on including molecular simulations, HPC, and machine learning.
