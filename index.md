@@ -34,7 +34,6 @@ classes: wide
 Hi there, and welcome!
 
 My name is Hossein. 
-
 I'm a research scientist at [IMEC](https://www.imec.be), working on computational methods for drug discovery.
 Before, I worked at [VITO](https://vito.be) as an HPC engineer and data scientist, built deep learning solutions for image analysis and domain-specific language models. I also managed HPC clusters and developed expertise in GPU computing and low-level profiling and performance optimization. 
 During my PhD and postdoctoral research, I used molecular dynamics simulations to study the structural and dynamical properties of nano-membranes for water filtration applications.
