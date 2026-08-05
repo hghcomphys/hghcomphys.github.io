@@ -1,23 +1,30 @@
 # Personal site 
-<!-- The code repository for [www.funincomputing.com](https://www.funincomputing.com). -->
+The code repository for my personal [website](https://hghcomphys.github.io/).
 
 
 ## Features
 
 - [Minimal Mistakes](https://mmistakes.github.io/minimal-mistakes/) theme 
-    - Command to built on a local machine\
-        Using Jekyll with Bundler on a local machine:
+    1. Installs Ruby dependencies listed in the `Gemfile`.
+        ```bash
+        pixi run bundle install
         ```
-        $ pixi run bundle exec jekyll serve
+        
+    2. Start a local Jekyll website server using the Ruby environment
+        ```bash
+        pixi run bundle exec jekyll serve
         ```
-[Pixi](https://pixi.prefix.dev/latest/installation/) is used to manege dependencies.
 
-- Google analytics\
+[Pixi](https://pixi.prefix.dev/latest/installation/) is used to manege project's dependencies.
+
+
+- Google analytics \
 Analytics are disabled by default in development. To enable when testing/building locally be sure to set `JEKYLL_ENV=production` to force the environment to production.
 
 - Using different [layouts](https://mmistakes.github.io/minimal-mistakes/docs/layouts/#home-page-layout)
 
 - [Disqus](https://disqus.com/) comments provider
+
 - add _LaTeX_ support to Markdown
 
 - Include videos
