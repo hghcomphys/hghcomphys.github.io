@@ -22,7 +22,7 @@ title_separator         : "-"
 name                    : "Hossein Ghorbanfekr"
 description             : #" by Hossein Ghorbanfekr"
 github_username         : "hghcomphys"
-url                     : "http://www.hghcomphys.github.io"
+url                     : "https://www.hghcomphys.github.io"
 baseurl                 : # the subpath of your site, e.g. "/blog"
 repository              : "hghcomphys/hghcomphys" 
 minimal_mistakes_skin   : air

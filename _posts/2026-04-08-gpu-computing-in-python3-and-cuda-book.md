@@ -1,5 +1,5 @@
 ---
-title: "My New Book: GPU Computing with Python 3 and CUDA"
+title: "Our New Book: GPU Computing with Python 3 and CUDA"
 categories:
   - Python 
 tags:
@@ -23,7 +23,7 @@ layout: archive
 ---
 
 
-I'm excited to announce the publication of my new book, “GPU-Accelerated Computing with Python 3 and CUDA”
+I'm excited to announce the publication of our new book, “GPU-Accelerated Computing with Python 3 and CUDA”
 
 Many thanks to my co-author [Niels Cautaerts](https://nielscautaerts.xyz) for the collaboration, 
 and to the [Packt](https://www.linkedin.com/company/packt-publishing/) team for supporting us throughout the process.
