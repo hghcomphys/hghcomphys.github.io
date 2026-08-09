@@ -101,28 +101,19 @@ The latter basically creates a binary column for each digit.
 
 ```python
 def scale(img):
-    """
-    Scale input image between [-1.0, 1.0].
-    """
+    """Scale input image between [-1.0, 1.0]."""
     return img.astype(np.float32)/127.5 - 1.0
 
 def unscale(img):
-    """
-    Unscale input image between [0, 255].
-    """
+    """Unscale input image between [0, 255]."""
     return ((img+1.0)*127.5).astype(np.uint8)
 
 def preprocess_image(img):
-    """
-    Preprocess function for image data generator.
-    """
-    img = scale(img)
-    return img
+    """Preprocess function for image data generator."""
+    return scale(img)
 
 def create_datagen(X, y, aug=False, onehot=False):
-    """
-    Create an image data generator from input images.
-    """
+    """Create an image data generator from input images."""
     # Apply augmentation
     if aug:
         datagen = tf.keras.preprocessing.image.ImageDataGenerator(
@@ -229,9 +220,7 @@ The extended classifier model then is built using an additional dense layer with
 
 ```python
 def build_custom_model():
-    """
-    Build a convolutional classifier that is used as the image features extractor.
-    """
+    """Build a convolutional classifier that is used as the image features extractor."""
     conv_regulizer = tf.keras.regularizers.l2(CFG['conv_regularization_factor'])
     dense_regulizer = tf.keras.regularizers.l2(CFG['dense_regularization_factor'])
     # Convolutional layers
@@ -300,31 +289,23 @@ class MahalanobisOutlierDetector:
         self.threshold = None
         
     def _extract_features(self, gen, steps, verbose) -> np.ndarray:
-        """
-        Extract features from the base model.
-        """
+        """Extract features from the base model."""
         if steps is None:
             steps = gen.samples//CFG['batch_size']
         return self.features_extractor.predict(gen, steps=steps, workers=8, verbose=1)
         
     def _init_calculations(self):
-        """
-        Calculate the prerequired matrices for Mahalanobis distance calculation.
-        """
+        """Calculate the prerequired matrices for Mahalanobis distance calculation."""
         self.features_mean = np.mean(self.features, axis=0)
         self.features_covmat = np.cov(self.features, rowvar=False)
         self.features_covmat_inv = scipy.linalg.inv(self.features_covmat)
         
     def _calculate_distance(self, x) -> float:
-        """
-        Calculate Mahalanobis distance for an input instance.
-        """
+        """Calculate Mahalanobis distance for an input instance."""
         return scipy.spatial.distance.mahalanobis(x, self.features_mean, self.features_covmat_inv)
     
     def _infer_threshold(self, verbose):
-        """
-        Infer threshold based on the extracted features from the training set.
-        """
+        """Infer threshold based on the extracted features from the training set."""
         scores = np.asarray([self._calculate_distance(feature) for feature in self.features])
         mean = np.mean(scores)
         std = np.std(scores)
@@ -335,17 +316,13 @@ class MahalanobisOutlierDetector:
             print("OD threshold :", self.threshold)  
             
     def fit(self, gen, steps=None, verbose=1):
-        """
-        Fit detector model.
-        """
+        """Fit detector model."""
         self.features = self._extract_features(gen, steps, verbose)
         self._init_calculations()
         self._infer_threshold(verbose)
         
     def predict(self, gen, steps=None, verbose=1) -> np.ndarray:
-        """
-        Calculate outlier score (Mahalanobis distance).
-        """
+        """Calculate outlier score (Mahalanobis distance)."""
         features  =  self._extract_features(gen, steps, verbose)
         scores = np.asarray([self._calculate_distance(feature) for feature in features])
         if verbose > 0:
@@ -432,4 +409,5 @@ Nevertheless, detecting the shifts in data distribution due to outliers is prett
 :) -->
 
 ### References
-[https://arxiv.org/abs/1612.01474](https://arxiv.org/abs/1612.01474)
+
+ - [https://arxiv.org/abs/1612.01474](https://arxiv.org/abs/1612.01474)

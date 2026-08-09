@@ -118,9 +118,11 @@ Other parameters work just fine with their default values but they can be also a
 #define OLED_RESET     -1  // reset pin # (or -1 if sharing Arduino reset pin)
 ```
 
-For more details and the sketch (C++ source code) please see 
-[https://github.com/hghcomphys/remote-alarm-system](https://github.com/hghcomphys/remote-alarm-system)
-{: .notice--info}
+For more details and the sketch (C++ source code) please check
+<a href="https://github.com/hghcomphys/remote-alarm-system">
+  <i class="fab fa-github"></i> Remote Alarm System 
+</a>.
+
 
 #### References
 Some useful links that part of this work is based on them are as follows: 
