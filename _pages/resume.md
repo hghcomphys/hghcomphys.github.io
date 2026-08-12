@@ -7,7 +7,7 @@ classes: wide
 
 ## Experience
 
-### *Computational Scientist*
+### *Research Scientist*
 **IMEC, Belgium | 2026 – Present**
 
 - **IMPACT:** Machine learning-driven molecular dynamics simulations of biomolecular systems for drug design and discovery.
@@ -91,26 +91,6 @@ Nature Communications, impact factor 14.7 (2017)*<br>
 
 
 
-## Personal Projects
-
-- **Pantea:** 
-A Python library for developing machine learning interatomic potentials based on JAX.
-[GitHub](https://github.com/hghcomphys/pantea)
-<!-- **Skills:** Python, JAX, Flax, Optax   -->
-- **Neural Network Potential:**
-A C++ implementation of neural network potentials (NNP) for molecular dynamics simulations.
-[GitHub](https://github.com/hghcomphys/nnp)
-<!-- **Skills:** C++, OpenNN, Make   -->
-- **Linear MD:**
-A linear-scaling molecular dynamics simulation code built from scratch.
-[GitHub](https://github.com/hghcomphys/linear-md)
-<!-- **Skills:** C++, Numba, JIT Compilation   -->
-- **GPU Top:**
-A customized command-line tool for monitoring GPU utilization.
-[GitHub](https://github.com/hghcomphys/gpu-top)
-<!-- **Skills:** Slurm, TUI   -->
-
-
 ## Book
 
 ### *GPU-Accelerated Computing with Python 3 and CUDA*
@@ -118,9 +98,28 @@ A customized command-line tool for monitoring GPU utilization.
 ISBN: 978-1803248103 
 [View Book](https://a.co/d/03VXXelq)
 
+## Independent Projects 
+
+- **Pantea:** 
+A Python tool for ML-based interatomic potentials based on JAX.
+[GitHub](https://github.com/hghcomphys/pantea)
+<!-- **Skills:** Python, JAX, Flax, Optax   -->
+- **NNP:**
+A C++ implementation of neural network potentials (NNP) for MD simulations.
+[GitHub](https://github.com/hghcomphys/nnp)
+<!-- **Skills:** C++, OpenNN, Make   -->
+- **LinearMD:**
+A linear-scaling molecular dynamics simulation code built from scratch.
+[GitHub](https://github.com/hghcomphys/linear-md)
+<!-- **Skills:** C++, Numba, JIT Compilation   -->
+- **GPUtop:**
+A customized command-line tool for monitoring GPU utilization.
+[GitHub](https://github.com/hghcomphys/gpu-top)
+<!-- **Skills:** Slurm, TUI   -->
+
+
 ## Giving Courses
 
-- [Python4HPC](https://github.com/hghcomphys/python4hpc)
-- Advanced Python
-- HPC Cluster Introduction
-- GPU-Computing in Python
+[Python4HPC](https://github.com/hghcomphys/python4hpc), Advanced Python, HPC Cluster Introduction, and GPU-Computing in Python
+
+
