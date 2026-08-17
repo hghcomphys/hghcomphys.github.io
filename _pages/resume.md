@@ -10,44 +10,47 @@ classes: wide
 ### *Research Scientist*
 **IMEC, Belgium | 2026 – Present**
 
-- **IMPACT:** Machine learning-driven molecular dynamics simulations of biomolecular systems for drug design and discovery.
+- **IMPACT:** *Machine-learning molecular dynamics* simulations of biomolecular systems for drug discovery.
 <!-- - **Skills:** Molecular simulations, Deep learning, GPU-computing -->
+
+- **XTCO:** *Low-level profiling* and characterization of LLM workloads on GPUs to improve analytical performance models for memory-centric hardware design. 
+
 
 ### *HPC Specialist / Data Scientist*
 **VITO, Belgium | 2020 – 2026**
 
-- **HPC Platform:** 
+- **[HPC Platform](https://vito.be/en/research/data-science/high-performance-computing):** 
 Setting up and maintaining an on-premise, GPU computing cluster with a focus on data science and machine learning applications.
 <!-- - **Skills:** SLURM, Linux (Admin), Environment Modules, Kubernetes, K3s -->
-- **GeoBERTje:**
+- **[GeoBERTje](https://vito.be/en/applications/geobertje):**
 Developing a domain-specific large language model based on transformers to classify lithologies from Dutch borehole text descriptions.
 <!-- - **Skills:** PyTorch, Transformers, Ollama -->
-- **CTS Framework:**
+- **[CTS Framework](https://vito.be/en/research/infrastructure/characterise-sort):**
 Contributing to the development of a real-time framework using machine learning pipelines for the characterization and sorting of waste streams.
 <!-- - **Skills:** PyTorch, Dask, CuPy, cuDF, Numba, gRPC -->
-- **Vivaldy:**
+- **[Vivaldy](https://penta-eureka.eu/project-overview/penta-call-4/vivaldy/):**
 Contributing to the development, validation, and monitoring of deep neural networks for medical image analysis, ensuring reliability of AI systems.
 <!-- - **Skills:** TensorFlow, CNNs -->
 - **Training and Tutorials:**
-Delivering training sessions to researchers.
+Delivering internal training sessions to researchers.
 
 ### *Postdoctoral Researcher*
 **University of Antwerp, Belgium | 2019 – 2020**
 
-- Conducting research on 2D material membranes through the implementation of molecular dynamics simulations based on machine learning techniques
+- Conducting research on *2D material membranes* through the implementation of *molecular dynamics* simulations based on *machine learning* techniques
 <a href="https://github.com/hghcomphys/files-h2o-hbn-nnp">
   <i class="fab fa-github"></i> Github
 </a>.
 <!-- - **Skills:** LAMMPS, VASP, RuNNer, N2P2 -->
-- Implementing a basic Python tool to simplify the development and validation of neural network potentials.
-- Developing machine learning models to predict properties of newly discovered materials, focusing on formation and gap energies.
+- Implementing a basic Python tool to simplify the development and validation of *neural network potentials*.
+<!-- - Developing *machine learning models* to predict properties of newly discovered materials, focusing on formation and gap energies. -->
 
 ### *Research PhD Student*
 **University of Antwerp | 2015 – 2019**
 
-- Performing molecular dynamics simulations of graphene-based membranes targeting applications in nano-filtration.
+- Performing *molecular dynamics* simulations of *graphene-based membranes* targeting applications in water nanofiltration.
 <!-- - **Scientific Packages:** LAMMPS, VASP, QE, VMD -->
-- Contributing to an open-source project (FMD) for performing classical molecular dynamics simulations.
+<!-- - Contributing to an open-source project (FMD) for performing classical molecular dynamics simulations. -->
 <!-- - **Skills:** MPI for Python, ctypes -->
 <!-- - **Code:** [github.com/a-amouei/fmd](https://github.com/a-amouei/fmd) -->
 
@@ -88,7 +91,8 @@ Nature, impact factor 42.8 (2018)*<br>
 - *Dependence of the Shape of Graphene Nanobubbles on Trapped Substance,
 Nature Communications, impact factor 14.7 (2017)*<br>
 **DOI:** [10.1038/ncomms15844](https://doi.org/10.1038/ncomms15844)
-
+- For a complete list of my publications, please visit my [Google Scholar](https://scholar.google.com/citations?user=7A5v2LQAAAAJ)<br>
+**ORCID:** [0000-0002-9191-8145](https://orcid.org/0000-0002-9191-8145)
 
 
 ## Book
@@ -118,8 +122,9 @@ A customized command-line tool for monitoring GPU utilization.
 <!-- **Skills:** Slurm, TUI   -->
 
 
-## Giving Courses
+## Giving Courses 
 
 [Python4HPC](https://github.com/hghcomphys/python4hpc), Advanced Python, HPC Cluster Introduction, and GPU-Computing in Python
+
 
 
