@@ -21,33 +21,102 @@ author_profile: false
 layout: splash
 ---
 
-Ever wished you could write *CUDA kernels* without diving into C/C++? With **Numba-CUDA**, you can. 
-This powerful tool lets you craft custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
+Ever wished you could write *CUDA kernels* without diving into C/C++? With **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)**, you can. 
+This powerful tool lets you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts and thread/block management, all while keeping the syntax simple.
-
 Yet, despite its potential, Numba-CUDA remains underappreciated in my opinion. 
-Many developers I’ve spoken with aren’t even aware it exists. 
-The reality? It bridges the gap between Python’s ease and CUDA’s precision, 
+Many colleagues I’ve spoken with aren’t even aware it exists. 
 letting you harness low-level GPU control without the complexity.
 
-In this post, I’ll walk you through the basics of writing a CUDA kernel with Numba-CUDA and then put theory into practice by implementing a Molecular Dynamics simulation.
+In this post, I’ll discuss the basics of writing a CUDA kernel with Numba-CUDA and then put theory into practice by implementing a Molecular Dynamics simulation.
 
 
 {: .notice--info}
-In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed already how **JAX** can be used to implement a GPU-accelerated *Molecular Dynamics* simulator relying on *Just-in-Time compilation*, *automatic vectorization*, and *automatic differentiation*.
+In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how **JAX** can be used to implement a GPU-accelerated *Molecular Dynamics* simulator relying on *Just-in-Time compilation*, *automatic vectorization*, and *automatic differentiation*.
+
+
+ADD_NUMBA_CUDA_MIGRATION_NOTE
 
 
 ### How write a CUDA kernel in Python using Numba-CUDA
 
 #### CUDA execution model
 
-In the CUDA execution model, **threads** are the smallest execution units, performing individual computations, while blocks are groups of threads that can cooperate and synchronize. 
-Threads within a **block** share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
-
-A **grid** is a collection of blocks, defining the full parallel scope of a kernel launch. 
-Each thread and block has a unique ID (`threadIdx` and `blockIdx`) for identification. 
+In the CUDA execution model, **threads** are the smallest execution units, 
+performing individual computations. 
+Additionally, **blocks** are groups of threads that can cooperate and synchronize. 
+A **grid** is a collection of blocks, defining the full parallel scope of a **kernel** launch. 
 The hierarchy of *grid* → *blocks* → *threads* enables scalable parallelism, with the GPU automatically distributing blocks across its processors. 
-This structure allows efficient, fine-grained control over parallel tasks.
+
+Each thread and block has a unique index for identification. 
+
+<figure style="width: 800px" class="align-center">
+  <img src="/assets/md-numba-cuda/cuda-kernel.png" alt="">
+  <figcaption>
+  CUDA grid in 1D including threads and blocks
+  </figcaption>
+</figure> 
+
+In the diagram above, each block has **2 threads**:
+
+```text
+Block 0 → threads 0, 1 → indices 0, 1
+Block 1 → threads 0, 1 → indices 2, 3
+Block 2 → threads 0, 1 → indices 4, 5
+Block 3 → threads 0, 1 → indices 6, 7
+```
+
+So each thread gets a unique global index:
+
+```text
+index = block_id × block_size + thread_id
+```
+
+This allows each CUDA thread to work on, for example, a different element of an array.
+
+
+A kernel is the logic that is executed by each thread in the grid.
+To create a CUDA kernel with `numba.cuda` , a Python function must be decorated with `cuda.jit`, as follows:
+
+
+```python
+from numba import cuda
+
+@cuda.jit
+def my_cuda_kernel():
+    ...
+```
+ 
+Inside a running kernel, `cuda.blockDim` contains the shape of the blocks, `cuda.blockIdx` contains the position of the block
+with the running thread, and `cuda.threadIdx` contains the position of the running thread relative to its block.
+
+Therefore, the global index in `numba.cuda` can be written as 
+
+```python
+index = cuda.blockIdx.x * cuda.blockDim.x + cuda.threadIdx.x;
+```
+
+CUDA supports 1D, 2D, and 3D grids and blocks.
+The `.x` means the x-dimension.
+
+
+Example:
+
+```python
+from numba import cuda
+from numpy.typing import NDArray 
+
+@cuda.jit
+def product_kernel(x: NDArray, y: NDArray, result: NDArray) -> None:
+    idx = cuda.grid(1)
+    if idx < len(x):
+        result[idx] = x[idx] * y[idx]
+```
+
+
+### Device array 
+
+Threads within a block share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
 
 
 ---
