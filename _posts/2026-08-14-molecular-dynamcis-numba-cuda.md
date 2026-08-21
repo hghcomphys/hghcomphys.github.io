@@ -22,7 +22,7 @@ layout: splash
 ---
 
 Ever wished you could write *CUDA kernels* without diving into C/C++? With **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)**, you can. 
-This powerful tool lets you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
+This tool lets you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts and thread/block management, all while keeping the syntax simple.
 Yet, despite its potential, Numba-CUDA remains underappreciated in my opinion. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
@@ -34,21 +34,23 @@ In this post, I’ll discuss the basics of writing a CUDA kernel with Numba-CUDA
 {: .notice--info}
 In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how **JAX** can be used to implement a GPU-accelerated *Molecular Dynamics* simulator relying on *Just-in-Time compilation*, *automatic vectorization*, and *automatic differentiation*.
 
+AVOID_CPP_AND_WRITE_CUDA_KERNEKS_DIRECTLY_IN_PYTHON
 
 ADD_NUMBA_CUDA_MIGRATION_NOTE
 
 
-### How write a CUDA kernel in Python using Numba-CUDA
+### Writing and executing a CUDA kernel in Python using Numba-CUDA
 
 #### CUDA execution model
 
 In the CUDA execution model, **threads** are the smallest execution units, 
 performing individual computations. 
 Additionally, **blocks** are groups of threads that can cooperate and synchronize. 
+Threads within a block share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
 A **grid** is a collection of blocks, defining the full parallel scope of a **kernel** launch. 
-The hierarchy of *grid* → *blocks* → *threads* enables scalable parallelism, with the GPU automatically distributing blocks across its processors. 
+The hierarchy of *grid* → *blocks* → *threads* enables scalable parallelism in CUDA execution model, with the GPU automatically distributing blocks across its multi-stream processors (SMs). 
 
-Each thread and block has a unique index for identification. 
+Diagram below shows an illustration of threads and blocks in a 1D grid:
 
 <figure style="width: 800px" class="align-center">
   <img src="/assets/md-numba-cuda/cuda-kernel.png" alt="">
@@ -57,7 +59,8 @@ Each thread and block has a unique index for identification.
   </figcaption>
 </figure> 
 
-In the diagram above, each block has **2 threads**:
+Each thread and block have their own zero-based assigned index to be identified.
+In this case, each block has **2 threads**:
 
 ```text
 Block 0 → threads 0, 1 → indices 0, 1
@@ -66,7 +69,7 @@ Block 2 → threads 0, 1 → indices 4, 5
 Block 3 → threads 0, 1 → indices 6, 7
 ```
 
-So each thread gets a unique global index:
+So each thread gets a unique **global index** which can be obtained using:
 
 ```text
 index = block_id × block_size + thread_id
@@ -74,6 +77,8 @@ index = block_id × block_size + thread_id
 
 This allows each CUDA thread to work on, for example, a different element of an array.
 
+
+#### Writing a CUDA kernel 
 
 A kernel is the logic that is executed by each thread in the grid.
 To create a CUDA kernel with `numba.cuda` , a Python function must be decorated with `cuda.jit`, as follows:
@@ -99,8 +104,16 @@ index = cuda.blockIdx.x * cuda.blockDim.x + cuda.threadIdx.x;
 CUDA supports 1D, 2D, and 3D grids and blocks.
 The `.x` means the x-dimension.
 
+Or, simply
 
-Example:
+```python
+index = cuda.grid(1)
+``` 
+
+Where, `1` is for 1D grid. Similarly, '2' and '3' for 2D and 3D grids.
+
+
+Let's write a simple kernel that calculate a dot product between two arrays.
 
 ```python
 from numba import cuda
@@ -113,11 +126,66 @@ def product_kernel(x: NDArray, y: NDArray, result: NDArray) -> None:
         result[idx] = x[idx] * y[idx]
 ```
 
+#### Executing the kernel
 
-### Device array 
+A CUDA kernel can be invoked and run on the GPU as follows:
 
-Threads within a block share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
+```python
+kenrel[blocks_per_grid, threads_per_block](arguments)
+```
 
+The value between square bracket constitute the kernel launch configuration.
+If the grid is 1D, these values are both integers.
+For 2D and 3D grid, these values must be *tuples* representing the number of threads and blocks per dimension.
+
+We can run our `product_kernel` as follows:
+
+Preparing input arrays
+
+```python
+import numpy as np
+
+x = np.linspace(0, 1, 1000, dtype=np.float32)
+y = np.linspace(0, 1, 1000, dtype=np.float32)
+```
+
+Since CUDA kernel can only operate on arrays that reside in the memory of the GPU, this data must be copied to the device as follows:
+
+```python
+x_dev = cuda.to_device(x)
+y_dev = cuda.to_device(y)
+result_dev = cuda.device_array(x.shape, dtype=x.dtype)
+```
+
+The final step is determining the kernel launch configuration parameters based on the problem size.
+Let us choose a block size of 256 threads.
+
+```python
+threads_per_block = 256
+```
+
+The grid must be of the same shape as the input and output arrays, since kernel mandates one-to-one mapping between thread and data elements.
+Therefore, the number of blocks in the grid is calculated as follows:
+
+
+```python
+from math import ceil
+blocks_per_grid = ceil(x.shape[0] / threads_per_block) 
+```
+
+The `product_kernel` can now be invoked as follows:
+
+```python
+product_kernel[blocks_per_grid, threads_per_block](x_dev, y_dev, resutl_dev)
+```
+
+To see the result, the data must be copied back to the host (CPU's memory):
+
+```python
+result = result_dev.copy_to_host()
+```
+
+DISCUSS_MEMORY_LAYOUTS
 
 ---
 
@@ -833,7 +901,7 @@ Advanced methods like neighbor lists, domain decomposition, and linked-cell algo
 
 ### Further reading
 
-If you’re interested in learning more about GPU programming and scientific computing with PythonCUDA, we cover these topics in more detail in our book:
+If you’re interested in learning more about GPU programming and scientific computing with Python and CUDA, we cover these topics in more detail in our book:
 
 *GPU-Accelerated Computing with Python 3 and CUDA*
 *Niels Cautaerts | Hossein Ghorbanfekr*
