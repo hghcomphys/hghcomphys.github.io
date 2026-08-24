@@ -8,7 +8,6 @@ tags:
   - C++
 header:
   image: &image "https://github.com/hghcomphys/remote-alarm-system/blob/master/docs/esp32_remote_alarm.JPG?raw=true"
-  caption: "ESP32 Remote Alarm System"
   teaser: *image
 # link: https://github.com/hghcomphys/remote-alarm-system
 classes: wide

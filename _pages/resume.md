@@ -3,8 +3,20 @@ permalink: /resume/
 title: ""
 classes: wide
 layout: single
-author_profile: false
+author_profile: true
 ---
+
+<style>
+@media (min-width: 80em) {
+  .page {
+    width: calc(100% - 300px)!important; 
+  }
+}
+.layout--single.wide .page {
+  width: revert-rule;
+
+}
+</style>
 
 
 ## Experience

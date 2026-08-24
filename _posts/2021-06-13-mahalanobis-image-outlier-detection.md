@@ -10,7 +10,6 @@ tags:
   - Python
 header:
   image: &image "/assets/outlier-detection/images/outlier_mnist.png"
-  caption: "MNIST Handwriting Digits & Outliers"
   teaser: *image
 link: 
 classes: wide

@@ -8,7 +8,6 @@ tags:
   - Raspberry Pi
 header:
   image: &image "https://miro.medium.com/v2/resize:fit:720/format:webp/1*2VhYAZPXdUHuA6ReJ1BfJg.jpeg"
-  caption: ""
   teaser: *image
 link: 
 classes: wide

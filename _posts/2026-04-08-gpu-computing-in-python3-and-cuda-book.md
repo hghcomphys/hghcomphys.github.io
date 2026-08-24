@@ -11,7 +11,6 @@ tags:
   - Machine Learning 
 header:
   image: &image "https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222"
-  caption: ""
   teaser: *image
 link: 
 classes: wide
