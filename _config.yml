@@ -151,6 +151,8 @@ defaults:
     values:
       layout: single
       author_profile: true
+      related: true
+      show_date: true
 
 # category_archive:
 #   type: liquid

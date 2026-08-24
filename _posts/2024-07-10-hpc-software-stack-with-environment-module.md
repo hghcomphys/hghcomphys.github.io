@@ -18,8 +18,17 @@ toc: false
 toc_label: "Table of Contents"
 # toc_icon: "cog"
 author_profile: false
-layout: splash
+layout: single
+show_date: true
+read_time: true
 ---
+
+<figure style="width: 100%" class="align-center">
+  <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*lOfQ09NChahs0hQitYSQCw.png" alt="">
+  <figcaption>
+  </figcaption>
+</figure> 
+
 
 {: .notice--info}
 In my [previous post](https://hghcomphys.github.io/slurm-hpc-cluster-with-raspberry-pis/),
@@ -109,11 +118,13 @@ $ sudo ln -s /softwarestack/lmod/lmod/init/cshrc   /etc/profile.d/z00_lmod.csh
 
 After logging in again, we can verify that Lmod is working by using the module avail or module av commands.
 
-<figure style="width: 800px" class="align-center">
+
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*Tj6eThWM9URa7jgPRsdMdg.png" alt="">
   <figcaption>
   </figcaption>
 </figure> 
+
 
 At this stage, we do not have any modules added except for the default module `StdEnv`. 
 However, I will add more modules by installing packages and defining module files accordingly in the following sections.
@@ -168,7 +179,7 @@ This configuration allows users to easily load the OpenMPI 4.1.0 environment usi
 
 Here’s how our module looks after adding the MPI module:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*ctUtVEZCKim_io9To7xvww.png" alt="">
   <figcaption>
   </figcaption>
@@ -183,7 +194,7 @@ $ module load OpenMPI/4.1.0  # or, module load OpenMPI
 
 Let get more info about this module:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*7NgKH_L19m__8dY58uv0cg.png" alt="">
   <figcaption>
   </figcaption>
@@ -254,7 +265,7 @@ The `--tasks` option specifies the number of parallel processes to run for the M
 
 Output when running with `--tasks=2` processes:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*7NgKH_L19m__8dY58uv0cg.png" alt="">
   <figcaption>
   </figcaption>
@@ -263,7 +274,7 @@ Output when running with `--tasks=2` processes:
 
 And when we set `--tasks=4`
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*MMRlMPrSXjgmMfq31xP87Q.png" alt="">
   <figcaption>
   </figcaption>
@@ -299,7 +310,7 @@ It loads the OpenMPI module and executes the `helloworld.x` MPI program, ensurin
 After executing the job, you can monitor its status using the `squeue` command. 
 Once completed, you can review the output to examine the results.
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*_Ybbb0QYX0N9DKZqi_f6EA.png" alt="">
   <figcaption>
   </figcaption>
@@ -377,7 +388,7 @@ EOF'
 
 GO is now available in our software stack as module:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*r4lpYKM7q03ckMdkZ5cL6Q.png" alt="">
   <figcaption>
   </figcaption>
@@ -436,7 +447,7 @@ $ module load Singulairty
 
 With both the GO and Singularity modules now loaded:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*X_sRPRuZF0kUeZW3DdoO8A.png" alt="">
   <figcaption>
   </figcaption>
@@ -508,7 +519,7 @@ Next, running the Python command within the Singularity container to verify the 
 Press enter or click to view image in full size
 
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*Z4opbAG4DOkRBQnIBHUZqw.png" alt="">
   <figcaption>
   </figcaption>
@@ -535,7 +546,7 @@ EOF
 
 The screenshot below demonstrates how to submit the job, check the queue status, and view the output:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*IJQqNFE2H4jsmSdu8Z1PgA.png" alt="">
   <figcaption>
   </figcaption>
@@ -580,7 +591,7 @@ EOF'
 
 You can see below that the Conda module is available.
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*h_KUmS9hQwDtoof9K4EXbw.png" alt="">
   <figcaption>
   </figcaption>
@@ -601,7 +612,7 @@ $ exit
 
 After that, all users will be able to see this default environment.
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*h_KUmS9hQwDtoof9K4EXbw.png" alt="">
   <figcaption>
   </figcaption>
@@ -623,7 +634,7 @@ $ conda create user-env python=3.10Your
 
 User `pi` now has access to both the default environment and their custom-created environment.
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*o5Nprp_HyGIqBruV5RI45A.png" alt="">
   <figcaption>
   </figcaption>
@@ -633,7 +644,7 @@ The user’s environment is visible only to that user and not to others.
 This makes it convenient to manage different types of Conda environments on the system. 
 Lastly, the `pi` user is able to activate their custom environment.
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*o5Nprp_HyGIqBruV5RI45A.png" alt="">
   <figcaption>
   </figcaption>
@@ -667,7 +678,7 @@ EOF
 This SLURM batch script allocates 1 GB of memory, requests 1 task with 2 CPUs, and sets a 5-minute time limit. 
 The script loads the Conda module, activates the `user-env` environment, runs `srun python --version` to display the Python version within the activated environment.
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:750/format:webp/1*o5Nprp_HyGIqBruV5RI45A.png" alt="">
   <figcaption>
   </figcaption>

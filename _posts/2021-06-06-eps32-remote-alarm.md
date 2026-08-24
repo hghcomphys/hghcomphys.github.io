@@ -1,9 +1,9 @@
 ---
-title: "Create a GSM Remote Alarm System"
+title: "How to Create a GSM Remote Alarm System"
 categories:
   - Electronics
 tags:
-  - Smart home
+  - Smart Home
   - ESP32
   - C++
 header:
@@ -19,9 +19,18 @@ classes: wide
 # classes:
 #   - landing
 #   - dark-theme
-layout: splash
+layout: single
 author_profile: false
+show_date: true
+read_time: true
 ---
+
+<figure style="width: 100%" class="align-center">
+  <img src="https://github.com/hghcomphys/remote-alarm-system/blob/master/docs/esp32_remote_alarm.JPG?raw=true" alt="">
+  <figcaption>
+  </figcaption>
+</figure> 
+
 
 _GSM Remote Alarm System_ is an experimental implementation of a broader idea of how one can build a home alarm system.
 This post shows my attempts to remotely control an alarm system using [SIM800L][sim800lref] GSM module which is connected to a [ESP32][esp32ref] microcontroller. 

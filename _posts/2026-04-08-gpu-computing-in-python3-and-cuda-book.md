@@ -8,7 +8,7 @@ tags:
   - Python 
   - Numba 
   - JAX 
-  - MachineLearning 
+  - Machine Learning 
 header:
   image: &image "https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222"
   caption: ""
@@ -18,9 +18,15 @@ classes: wide
 toc: false
 toc_label: "Table of Contents"
 # toc_icon: "cog"
-author_profile: true
-layout: archive
+author_profile: false
+layout: single
 ---
+
+<figure style="width: 100%" class="align-center">
+  <img src="https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222" alt="">
+  <figcaption>
+  </figcaption>
+</figure> 
 
 
 I'm excited to announce the publication of our new book, “GPU-Accelerated Computing with Python 3 and CUDA”

@@ -18,8 +18,16 @@ toc: false
 toc_label: "Table of Contents"
 # toc_icon: "cog"
 author_profile: false
-layout: splash
+layout: single
+show_date: true
+read_time: true
 ---
+
+<figure style="width: 100%" class="align-center">
+  <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*Ef5I9Je6yY4cVoFcgDAEqA.png" alt="">
+  <figcaption> 
+  </figcaption>
+</figure> 
 
 
 I began using JAX after experiencing disappointment with PyTorch for optimizing my Python scripts. 
@@ -283,7 +291,7 @@ initial_structure = Structure.from_ase(unit_cell.repeat((10, 10, 10)))
 view(atoms=initial_structure.to_ase(), viewer='ngl')
 ```
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*rTHUh9RrlFIT4MHIJLZ-6w.png" alt="">
   <figcaption>
 The initial configuration of 1000 He atoms in a periodic simulation box
@@ -594,7 +602,7 @@ simulate(system, simulator, num_steps=10000, output_freq=1000)
 
 As results, it outputs physical properties such as step, temperature, potential energy and pressure after each 1000 steps.
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*qeSV0ufd0lWcWSIQTfdjSQ.png" alt="">
   <figcaption>
 The output physical properties during the simulation.
@@ -604,7 +612,7 @@ The output physical properties during the simulation.
 
 The figure below illustrates the time evolution of our MD simulation involving 1000 helium atoms in a periodic box at room temperature:
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*7S2L0PRoZSHhxMf3UtIvxA.gif" alt="">
   <figcaption>
 MD simulation of 1000 helium atoms a periodic box.
@@ -615,7 +623,7 @@ MD simulation of 1000 helium atoms a periodic box.
 ##### Performance
 As can be seen in the below graph, our JAX kernel efficiently harnesses nearly the full capacity of the GPU (Device 1) to perform the simulation. This high level of resource utilization ensures that the computational power of the GPU is maximized, leading to significant improvements in the speed and performance of the simulation.
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*eygnQ1-lmPip9AOm2dlSrA.png" alt="">
   <figcaption>
   GPU memory and core utilization during the MD simulation.
@@ -625,7 +633,7 @@ As can be seen in the below graph, our JAX kernel efficiently harnesses nearly t
 
 I also conducted the same MD simulation on my laptop CPU and a more powerful GPU, the A100. The results demonstrate a significant speedup with GPU calculations. To highlight the importance of using GPU hardware, I simulated a system with 2000 atoms as well. One of the great features of JAX is that you can seamlessly transfer your code execution from CPU to GPU without modifying the original code, saving considerable time and effort.
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:640/format:webp/1*rQSJBsbr2S01qb6rPQSIcw.png" alt="">
   <figcaption>
   CPU vs. GPU benchmark

@@ -16,8 +16,17 @@ toc: false
 toc_label: "Table of Contents"
 # toc_icon: "cog"
 author_profile: false
-layout: splash
+layout: single
+show_date: true
+read_time: true
 ---
+
+<figure style="width: 100%" class="align-center">
+  <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*2VhYAZPXdUHuA6ReJ1BfJg.jpeg" alt="">
+  <figcaption> 
+  </figcaption>
+</figure> 
+
 
 
 In this post, I’ll share my attempt to build a _Slurm_ High-Performance Computing (HPC) cluster using Raspberry Pi’s. 
@@ -51,7 +60,7 @@ Cluster network topology
 
 There are various network topologies available for configuring an HPC cluster, each tailored to specific performance expectations and application requirements. In our scenario, we’re focusing on interconnecting three Raspberry Pi’s within a subnet (`10.0.0.x`) via a router and a switch. I’ve set up a DHCP server on the router with reserved IPs to allocate fixed IP addresses to each Raspberry Pi based on their unique MAC address. However, this can be simplified by directly configuring static IPs (`192.168.0.x`) on the Raspberry Pi’s themselves. And, if you’re using a Wi-Fi access point instead of a LAN connection to interconnect Raspberry Pi’s through your home ISP router, you can bypass the need for the router and ethernet switch. Since this setup is intended for a test cluster and doesn’t require a fast or even stable connection, this alternative is viable. Furthermore, internet connectivity is provided by linking the router to the home ISP Wi-Fi access point and sharing it to devices via ethernet. The diagram below provides a visual representation of the cluster network:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*ainKot9AHAjvo4pZXYR-Yw.png" alt="">
   <figcaption>
 Raspberry Pi HPC Cluster network topology
@@ -79,7 +88,7 @@ I used 3x Raspberry Pi’s that had been sitting idle for some time and some oth
    The router will manage external connections and the switch handles internal device communications.
 
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 60%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*R0C_j6zz34QpMZfC0cA6zQ.jpeg" alt="">
   <figcaption>
 A photo of the Raspberry Pi cluster
@@ -117,7 +126,7 @@ But, there’s room for improvement here by utilizing tools such as LDAP or othe
     $ sudo apt update && sudo apt upgrade
     ```
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 60%" class="align-center">
   <img src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*ui8V0o_JDLxQpMkKe5szpg.png" alt="">
   <figcaption>
   </figcaption>
