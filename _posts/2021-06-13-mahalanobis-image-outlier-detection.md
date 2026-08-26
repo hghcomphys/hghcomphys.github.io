@@ -1,33 +1,41 @@
 ---
 title: "Image Outlier Detection: Mahalanobis Distance"
 categories:
-  - Machine learning
+  - Machine Learning
 tags:
-  - Outlier detection
-  - Deep learning
-  - Image analysis
+  - Outlier Detection
+  - Deep Learning
+  - Image Analysis
   - Keras
   - Python
 header:
   image: &image "/assets/outlier-detection/images/outlier_mnist.png"
-  caption: "MNIST Handwriting Digits & Outliers"
   teaser: *image
 link: 
 classes: wide
-toc: true
+toc: false
 toc_label: "Table of Contents"
 # toc_icon: "cog"
-layout: splash
 author_profile: false
+layout: single
+show_date: true
+read_time: true
 ---
+
+<figure style="width: 100%" class="align-center">
+  <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/outlier_mnist.png?raw=true" alt="">
+  <figcaption> 
+  </figcaption>
+</figure> 
+
 
 <!-- I recently learned about outlier detection in context of medial image analysis.  -->
 In this post, I will discuss how _Mahalanobis distance_ (MD) can be used to detect image outliers from [MNIST](http://yann.lecun.com/exdb/mnist/) handwriting digits dataset as an example.
 Outliers are basically those sample images that don’t belong to a certain population in our training samples. 
 Here we are particularly interested to identify those _known_ or _unknown_  populations that are out-of-distribution and are considered potentially as extreme cases for deployed machine learning models. 
 
-Access to the entire script and more is available via this [jupyter notebook](https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/image_outlier_detection_mahalanobis_distance.ipynb).
 {: .notice--info}
+Access to the entire script and more is available via this [jupyter notebook](https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/image_outlier_detection_mahalanobis_distance.ipynb).
 
 <!-- ## Background -->
 
@@ -37,7 +45,7 @@ However, due to their intrinsic black box architecture, NNs exhibit an inclinati
 If an AI algorithm makes overconfident incorrect predictions then the consequences can be harmful or even 
 catastrophic, for instance in the context of healthcare. 
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/outlier_retina.png?raw=true" alt="">
   <figcaption>An example outlier in retina images of diabetic retinopathy diagnosis which can cause an AI algorithm makes overconfident incorrect predictions.</figcaption>
 </figure> 
@@ -73,7 +81,7 @@ It is however better to be applied on _feature space_ which is in fact an altern
 in smaller dimensions encoded by a neural network. Any point in this space not only describing individual pixels but also intrinsically the appearance and relevant patterns for the labels present in the sample. 
 
 The figure below shows a schematic view of a neural network which encodes an input images to a feature space. The feature extractor in fact is a representation of the original images but in a reduced dimension $x$.
-<figure style="width: 500px" class="align-center">
+<figure style="width: 60%" class="align-center">
   <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/md_feature_model.png?raw=true" alt="">
   <figcaption>A deep neural network as feature extractor maps an input image to a smaller feature space (x).</figcaption>
 </figure> 
@@ -194,7 +202,7 @@ Bringing all together, we have eventually three sorts of data:
 - _known_ outlier set which contains image labels `8` and `9`
 - _unknown_ outliers belong to completely external datasets `Fashion MNIST` and `CIFAR10`
 
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/datasets.png?raw=true" alt="">
   <figcaption>Schematic representation of three different sorts of image data: training/test inliers (MNIST digits 0-7), known outliers (MNIST digits 8-9), and unknown outliers (Fashion MNIST and CIFAR10).</figcaption>
 </figure> 
@@ -379,7 +387,7 @@ Firstly, it is interesting to note that the Mahalanobis detector only detects `2
 However, it detects more outliers for the MNIST outlier, Fashion MNIST, and CIFAR10 datasets with corresponding values of `23.26%`, `59.62%`, and `24.74%`.
 This tells us that the Mahalanobis OD enables us to detect outliers either they exist within the studied dataset or completely external datasets.
 Secondly, the mean outlier score (i.e Mahalanobis distance) is found to be larger for outliers than those inliers of which used for training and test sets.
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/md_score_barplot.png?raw=true" alt="">
   <figcaption>The mean outlier score for various populations of MNIST (training), MNIST(validation), MNIST (known outlier), Fashion MNIST (unknown outlier), and CIFAR10 (unknown outlier).</figcaption>
 </figure> 
@@ -388,14 +396,14 @@ Secondly, the mean outlier score (i.e Mahalanobis distance) is found to be large
 Further insights can be obtained by considering the distributions of the scores and focusing on the overlapping samples as shown in the next figure which is in fact the overlaid box and violin plots of the outlier score for different populations of MNIST (training), MNIST(validation), MNIST (known outlier), Fashion MNIST (unknown outlier), and CIFAR10 (unknown outlier). 
 The figure reveals that there exist still some outliers that their score is small as compared with the inlier scores, Or samples within the training sets of which their scores is beyond the threshold.
 This basically means that  Mahalanobis detector unable to identify all outliers but fraction of them and thus working to some extent.
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/md_score_boxplot.png?raw=true" alt="">
   <figcaption>An overlaid box and violin plots of outlier scores for various populations of MNIST (training), MNIST(validation), MNIST (known outlier), Fashion MNIST (unknown outlier), and CIFAR10 (unknown outlier).</figcaption>
 </figure>
 
 The corresponding histogram plot of the outlier scores represents better the overlap regions.  
 Nevertheless, detecting the shifts in data distribution due to outliers is pretty much obvious in the two previous  figures.
-<figure style="width: 600px" class="align-center">
+<figure style="width: 70%" class="align-center">
   <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/md_score_histplot.png?raw=true" alt="">
   <figcaption>The corresponding histogram plot shows the shift in data distribution particularly for the Fashion MNIST population.</figcaption>
 </figure> 

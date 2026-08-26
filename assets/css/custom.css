@@ -1,0 +1,26 @@
+.page__hero-image{
+  display: none;
+}
+
+.layout--single p{
+    text-align: justify
+}
+
+.layout--single .pagination{
+    display: none
+}
+
+/* Extra-wide single posts */
+.layout--single.wide .page {
+  width: 100%;
+
+}
+.layout--single.wide .page__inner-wrap {
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.layout--single.wide .page__content {
+  max-width: none;
+}
+
