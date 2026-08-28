@@ -1,5 +1,5 @@
 ---
-title: "How Numba Enables CUDA Kernels for Accelerating Molecular Dynamics on GPU"
+title: "How Numba Enables CUDA Kernels in Python: Molecular Dynamics Showcase"
 categories:
   - Python 
   - MolecularDynamics
@@ -23,11 +23,18 @@ show_date: true
 read_time: true
 ---
 
+<figure style="width: 100%" class="align-center">
+  <img src="/assets/md-numba-cuda/cover.png" alt="">
+  <figcaption> 
+  </figcaption>
+</figure> 
+
+
 Have you ever wished you could write *CUDA kernels* without diving into C/C++?
 **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)** allows you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts, all while keeping the syntax simple.
-Numba-CUDA compiles Python code through LLVM and NVIDIA's NVVM infrastructure to generate PTX code at runtime, 
-making it more than a simple wrapper around *nvcc* to compile kernels like CUDA C++.
+Numba compiles Python code through LLVM and NVIDIA's NVVM infrastructure to generate PTX code at runtime, 
+making it more than a wrapper around *nvcc* to compile kernels like CUDA C++.
 Yet, despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
@@ -41,8 +48,8 @@ In this post, I’ll discuss the basics of writing CUDA kernels with Numba-CUDA 
 ## How to write and execute a CUDA kernel in Python using Numba-CUDA
 
 Before diving into technical details, it's important to have a basic understanding of how CUDA *execution model*
-enables parallelism. 
-If you're already familiar with CPU parallelism, the extension to CUDA should be straight forward.
+in general enables parallelism. 
+If you're already familiar with CPU parallelism, the extension to the CUDA should be straight forward.
 
 
 ### CUDA execution model
@@ -52,7 +59,7 @@ performing individual computations.
 Additionally, **blocks** are groups of threads that can cooperate and synchronize. 
 Threads within a block share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
 A **grid** is a collection of blocks, defining the full parallel scope of a **kernel** launch. 
-The hierarchy of *grid* → *blocks* → *threads* enables scalable parallelism in CUDA, 
+The hierarchy of *threads* → *blocks* → *grid* enables scalable parallelism in CUDA, 
 with the GPU automatically distributing blocks across its multi-stream processors (SMs). 
 
 Diagram below shows an illustration of threads and blocks in a 1D grid:
@@ -97,8 +104,11 @@ def my_cuda_kernel():
     ...
 ```
 
-DESCRIBE_JIT_COMPILATION
-
+<!-- {: .notice--info} -->
+JIT (Just-In-Time) compilation means that code is compiled at runtime, when it is needed, rather than being fully compiled beforehand. 
+Here, `cuda.jit` compiles Python the function into a CUDA GPU kernel when it is first called.
+Furthermore, Numba checks the argument types at runtime and dispatches the call to a matching compiled specialization; if non exists, JIT compilation creates one. 
+This is called *Dynamic dispatching* which works together with JIT compilation.  
 
 Inside a running kernel, `cuda.blockDim` contains the shape of the blocks, `cuda.blockIdx` contains the position of the block
 with the running thread, and `cuda.threadIdx` contains the position of the running thread relative to its block.
@@ -140,7 +150,7 @@ while checking that the index is within the array bounds.
 
 
 {: .notice--warning}
-Numba-CUDA is in maintenance mode. 
+Numba-CUDA is currently in maintenance mode. 
 New feature development is targeted towards [Numba-CUDA-MLIR](https://github.com/NVIDIA/numba-cuda-mlir)
 For migration guidance, see [Migration from Numba / Numba-CUDA](https://github.com/NVIDIA/numba-cuda-mlir#migration-from-numba--numba-cuda).
 In short, use `from numba_cuda_mlir import cuda` instead of `from numba import cuda`.
@@ -157,7 +167,8 @@ The value between square bracket constitute the kernel launch configuration whic
 If the grid is 1D, these values are both integers.
 For 2D and 3D grid, these values must be *tuples* representing the number of threads and blocks per dimension.
 
-We can run the `product_kernel` first via preparing input arrays
+We can easily run the `product_kernel` kernel, 
+but fore that we need also preparing required input arrays
 
 ```python
 import numpy as np
@@ -174,7 +185,9 @@ y_dev = cuda.to_device(y)
 result_dev = cuda.device_array(x.shape, dtype=x.dtype)
 ```
 
-DESCRIBE_CODE_ABOVE
+Where, `cuda.to_device` method copies `x` (`y`) from CPU host memory to GPU device memory.
+Also, `cuda.device_array` allocates an empty GPU array with the same shape and data type as `x`, intended to store the result.
+
 
 The final step is determining the kernel launch configuration parameters based on the problem size.
 Let us choose a block size of 256 threads.
@@ -213,10 +226,10 @@ DISCUSS_DEVICE_VS_HOST_ARRAY
 
 <!-- We've already covered the basics of writing CUDA kernels in Python.  -->
 Now, let's put what have discussed into practice by creating a GPU-accelerated molecular dynamics (MD) simulator which is used for studying materials at the atomic scale. 
-We'll begin with a high-level overview of how MD simulations work, then we will implement the key components step by step while leveraging the features provided by Numba and Numba-CUDA.
+We'll begin with a high-level overview of how MD simulation works, then we will implement the necessary components step by step while using the features provided by Numba-CUDA.
 
 
-## How to create GPU-accelerated MD simulator
+## How to create a GPU-accelerated MD simulator
 
 <!-- ### How MD simulations work -->
 
@@ -246,7 +259,6 @@ In what follows, I will elaborate on each step and create an implementation for 
 
 The system we want to model is a collection of particles.
 Particles are initialized with starting positions and velocities, based on experimental data and physical conditions such as desired temperature and pressure. 
-
 In an MD simulation, particles are constrained to a finite region of space called a _simulation box_.
 To mimic an infinite system, which is a good approximation for real liquids, gases, and bulk materials, the boundaries of this box are usually defined to be periodic.
 This means that when an atom moves outside one boundary, it reappears on the opposite side, mimicking continuous space.
@@ -493,12 +505,12 @@ Until now, we've derived the formulas needed to calculate the forces acting on e
 
 #### Parallelizing force calculations
 
-We write a CUDA kernel to calculate forces for each particle in parallel by mapping each calculation onto a separate thread. 
-This is doable because force calculations for individual atoms are independent and can be easily executed as *embarrassingly parallel* tasks. 
+We will write a CUDA kernel to calculate forces for each particle in parallel by mapping each calculation onto a separate thread. 
+This is feasible because force calculations for individual atoms are independent and can be easily executed as *embarrassingly parallel* tasks. 
 Each thread reads all the positions from global memory and updates its own forces without causing *race conditions*, as each element in the force array is written to by only one thread. 
 This allows us to eliminate the need for a loop over the atom index, enabling threads in the grid to run these calculations concurrently.
 
-The following implementation demonstrates how to distribute force calculation tasks across multiple GPU threads:
+The following implementation shows how to distribute force calculation tasks across multiple GPU threads:
 
 
 ```python
@@ -520,6 +532,8 @@ def compute_force(
                 pair_interaction(ri, rj, params.box_length, force)
         fi[0], fi[1] = force[0], force[1]
 ```
+
+UPDATE_CODE_USING_AMARDUS
 
 <!-- The `@cuda.jit` decorator in Numba is used to JIT compile this function into an optimized machine code that can be executed directly on GPU hardware.  -->
 We first allocated an array `force` with `shape=(2,)` in the GPU *local* memory.
@@ -625,7 +639,7 @@ The positions and velocities for all atoms are updated, and the algorithm procee
 This process repeats, with forces recalculated at each step to gradually build the trajectory of the particles.
 
 
-#### Parallelizing Verlet time integrator
+#### Parallelizing *Verlet* integrator
 
 We'll follow the same approach to speed up the time integration as we used to calculate the forces: we parallelize over the all the atoms.
 
@@ -800,159 +814,41 @@ ADD_BIG_SYSTEM
 ADD_CODE_REF
 
 
+<!-- ## Performance analysis -->
 
-## Performance analysis
+<!-- Here, I discuss the performance of our implemented simulator and provide insights into its -->
+<!-- performance along with suggestions for further improvement. -->
 
 ### Benchmarks
 
-To illustrate the runtime performance of our GPU implementation of an MD simulator, we ran it for different system sizes of $100$, $1,000$, and $10,000$ atoms and compare to two CPU implementations:
+To illustrate the runtime performance of our GPU implementation of an MD simulator, 
+I ran it for different system sizes of $100$, $1,000$, and $10,000$ atoms and compare to two CPU implementations:
 
 1. A serial version of the same code optimized with Numba’s just-in-time (JIT) compilation. 
 2. A parallelized version on an 8-core CPU using Numba’s JIT along with `prange` for multithreading. 
 
-The GPU versio was run on two different GPU types, including a low-powered _MX130_ in a laptop and a _A100_ in a data center.
+The GPU version was run on *A100*, a data center GPU, and additionally *RTX Ti 2080*, a consumer GPU. 
+The following figure shows the elapsed runtime. 
+Note that the y axis is logarithmically scaled, and precision is in `float64`.
 
+<figure style="width: 70%" class="align-center">
+  <img src="/assets/md-numba-cuda/benchmarks.png" alt="">
+  <figcaption> 
+  Our MD simulation benchmark runs on a different system for 1,000 time steps
+  </figcaption>
+</figure> 
 
-The figure below shows the run time. Note that the y-axis is logarithmically scaled, and precision is in `float64`.
+For small systems, GPU computing offers few benefits due to its overhead and GPU
+underutilization. For large systems, the performance gains with the GPU are significant. The RTX
+GPU achieved up to 150x faster than the serial code, and the A100 GPU was nearly 400x faster.
+The significant difference in performance between the two GPU types is due to the higher
+computing capacity and the hardware support for floating-point operations in the data center
+GPU.
 
-<img src="/assets/md-numba-cuda/benchmark.png" width="500" />
-
-For small systems, the GPU implementation offers few benefits due to the additional overhead.
-For large systems, the performance gained with the GPU are significant. 
-For a system of $10,000$ atoms, the MX130 GPU achieved was up to $10 \times$ faster than the serial code, while the A100 GPU was nearly $400 \times$ faster. 
-The significant difference in performance between the two GPU types is due to their varying memory bandwidths, `40 GB/s` compared `1,555 GB/s`) and the hardware support for floating-point operations in data center GPUs.
-
-### Profiling
-
-Are there additional gains to be made in performance?
-Let's find out by profiling our MD simulator for $1,000$ atoms using the *NVIDIA's Nsight Systems* CLI tool to gain a deeper understanding of kernel execution time and memory utilization. 
-
-<!-- maybe mention the system size you are using for these profiling things -->
-We profile the kernel execution time using the `nsys` command:
-
-```bash
-$ nsys profile --stats=True python molecular_dynamics.py
-
-  Executing 'gpukernsum' stats report
-    Time (%)  Total Time (ns)  Num Calls    Avg (ns)            Name       
-    --------  ---------------  ---------  ------------   ------------------
-         94.1      451,506,959         10  45,150,695.9   cuMemcpyDtoH_v2   
-          5.4       26,104,324      3,001       8,698.5   cuLaunchKernel    
-          0.2          849,838          3     283,279.3   cuModuleLoadDataEx
-          0.1          515,662          3     171,887.3   cuLinkComplete    
-          0.1          297,756          3      99,252.0   cuMemAlloc_v2     
-          0.1          255,826          3      85,275.3   cuLinkCreate_v2   
-          0.0           65,209          1      65,209.0   cuMemGetInfo_v2   
-          0.0           52,748          3      17,582.7   cuMemcpyHtoD_v2   
-          0.0            3,850          3       1,283.3   cuLinkDestroy     
-          0.0              320          1         320.0   cuDeviceGetUuid_v2
-```
-
-<!-- ```python
-  # Executing 'gpumemtimesum' stats report
-  #    Time (%)  Total Time (ns)  Count  Avg (ns)       Operation     
-  #    --------  ---------------  -----  --------   ------------------
-  #        68.2           31,776     10   3,177.6   [CUDA memcpy DtoH]
-  #        31.8           14,816      3   4,938.7   [CUDA memcpy HtoD]
-    
-``` -->
-
-The *kernel execution time* shows that data collection tasks, as requiring device-to-host (D2H) data transfer, is a computational bottleneck. 
-We can eliminate the unnecessary data transfer by moving the temperature calculation to the GPU.
-Also avoiding configuration saves at each time step and using process concurrency can help reduce disk I/O latency. 
-Addressing these two bottlenecks allows us to observe that $99\%$ of the runtime is allocated to the force computation kernel.
-
-<!-- ```bash
-$ nsys profile --stats=True python molecular_dynamics.py
-
-  Executing 'gpukernsum' stats report
-  Time (%)  Total Time (ns)  Num Calls  Avg (ns)          Name       
-  --------  ---------------  ---------  ---------  ------------------
-      99.3      313,336,723      3,001  104,410.8  cuLaunchKernel    
-       0.3          905,387          3  301,795.7  cuModuleLoadDataEx
-      #  0.2          492,993          3  164,331.0  cuLinkComplete    
-      #  0.1          307,675          3  102,558.3  cuMemAlloc_v2     
-      #  0.1          248,266          3   82,755.3  cuLinkCreate_v2   
-      #  0.0           67,719          1   67,719.0  cuMemGetInfo_v2   
-      #  0.0           53,219          3   17,739.7  cuMemcpyHtoD_v2   
-      #  0.0            4,930          3    1,643.3  cuLinkDestroy     
-      #  0.0              430          1      430.0  cuDeviceGetUuid_v2
-
-#  Executing 'gpukernsum' stats report
- 
-#   Time (%)  Total Time (ns)  Instances  Avg (ns)      GridXYZ         BlockXYZ             Name                                            
-#   --------  ---------------  ---------  ---------  --------------  --------------  ---------------------------
-#       98.8      774,240,854        858  902,378.6    63    1    1    32    1    1  compute_force
-#        0.7        5,123,507        858    5,971.5    63    1    1    32    1    1  verlet_integration_position
-#        0.5        4,058,156        857    4,735.3    63    1    1    32    1    1  verlet_integration_velocity
-``` -->
-
-The *memory access pattern* is also often a limiting factor for GPU kernel performance.
-Therefore, we profile the global memory access performance for the force calculation to decide whether it is memory or compute bound.
-
-We specifically profile the force calculation kernel using `nv-nsight-cu-cli` as follows:
-
-```bash
-$ nv-nsight-cu-cli --kernels "compute_force" --metrics achieved_occupancy,gld_efficiency,gst_efficiency python script.py
-
-Device "NVIDIA GeForce MX130"
-    Invocations                 Metric Description         Avg
-    Kernel: compute_force
-       1001                     Achieved Occupancy    0.309848
-       1001          Global Memory Load Efficiency      91.56%
-       1001         Global Memory Store Efficiency     100.00%
-```
-
-The global memory is being utilized with $92\%$ (load) and $100\%$ (store) efficiency.
-This confirms that our data representation of particles and our access patterns are fine.
-On the other hand, achieve occupancy of $0.31$ suggests a low ratio of the average active warps per active cycle and may be improved.
-A small compute metric and large memory utilization is often an indication of *memory bound* problem.
-This means the cores are waiting for data to be fetched from, or written to, memory rather than spending time performing calculations.
-To address this common issue, we can use block shared memory to improve the overall *memory throughput*. 
-
-<!-- Nevertheless, the memory load throughput for the `velocity_integration_position` is close to the peak performance (40.08 GB/s).
-One way to resolve this issue is to define a more efficient data representation (*SOA* versus *AOS*) for particles to ensure aligned and coalesced memory access.
-For instance, changing the memory layout order of device arrays from the default *row-major* (`C`) to *column-major* (`F`) improved the load efficiency to at least $91\%$. -->
-
-<!-- **Note** It appears that the memory throughput is slightly larger than the peak memory bandwidth.
-The reason is that if cached data is accessed, it does not need to go through global memory, but it still contributes to the memory throughput calculations. -->
-
-<!-- 
-```bash
-ORDER "C"
-$ nv-nsight-cu-cli --metrics gld_efficiency,gld_throughput python script.py 
-
-Device "NVIDIA GeForce MX130"
-    Invocations                                 Metric Description          Avg
-    Kernel: verlet_integration_position
-       1000                          Global Memory Load Efficiency       50.00%
-       1000                                 Global Load Throughput   40.609GB/s
-    Kernel: compute_force
-       1001                          Global Memory Load Efficiency       48.49%
-       1001                                 Global Load Throughput   18.056GB/s
-    Kernel: verlet_integration_velocity
-       1000                          Global Memory Load Efficiency       50.00%
-       1000                                 Global Load Throughput   24.651GB/s
-
-# ORDER "F"
-# Device "NVIDIA GeForce MX130 (0)"
-#     Invocations                                 Metric Description          Avg
-#     Kernel: verlet_integration_position
-#        1000                               Global Load Transactions        5000
-#        1000                          Global Memory Load Efficiency     100.00%
-#        1000                                 Global Load Throughput  20.282GB/s
-#     Kernel: compute_force
-#        1001                               Global Load Transactions     3000000
-#        1001                          Global Memory Load Efficiency      91.56%
-#        1001                                 Global Load Throughput  9.6094GB/s
-#     Kernel: verlet_integration_velocity
-#        1000                               Global Load Transactions        2000
-#        1000                          Global Memory Load Efficiency     100.00%
-#        1000                                 Global Load Throughput  13.522GB/s
-```  -->
 
 At the *algorithmic level*, we have used a basic approach to identify neighboring atoms by looping over all atoms, resulting in a computational complexity of $O(N^2)$, where $N$ is the number of atoms. 
-Advanced methods like neighbor lists, domain decomposition, and linked-cell algorithms can reduce this complexity to $O(N)$, enabling MD simulations to efficiently handle larger systems with millions of atoms.
+Advanced methods like *neighbor lists* together with *linked-cell* algorithms can reduce this complexity to $O(N)$, enabling MD simulations to efficiently handle larger systems with millions of atoms.
+I'll discuss the *linear scaling MD* in a separate post in near future.
 
 
 ## Further reading
@@ -965,3 +861,5 @@ If you’re interested in learning more about GPU programming and scientific com
 [Learn more about the book →](https://a.co/d/03VXXelq)
 
 <img src="https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222" width="25%" />
+
+
