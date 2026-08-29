@@ -26,28 +26,15 @@ classes: wide
 #     text: "More text here."
 ---
 
-
 > The inside of a computer is as dumb as hell but it goes like mad!
 > <cite><a href="https://en.wikipedia.org/wiki/Richard_Feynman">Richard P. Feynman</a></cite>
  
 Hi, My name is Hossein. 
 I'm a research scientist at [imec](https://www.imec.be), where I work on computational methods for drug discovery. 
 Previously, I worked at [vito](https://vito.be) as an HPC specialist and data scientist, developing deep learning solutions for image analysis and domain-specific language models, while also managing an HPC cluster and working on GPU computing, profiling, and performance optimization. 
-My background is in physics, and during my PhD and postdoctoral research, I used molecular dynamics simulations to study the structural and dynamical properties of nanomembranes for water filtration applications. This is my personal space where I share technical notes, projects, experiments, and things I learn along the way.
+My background is in physics, and during my PhD and postdoctoral research, I used molecular dynamics simulations to study the structural and dynamical properties of nanomembranes for water filtration applications. 
 
-
-<!-- Hi there, and welcome! -->
-<!-- Hi 👋 -->
-
-<!-- My name is Hossein.  -->
-<!-- I'm a research scientist at [IMEC](https://www.imec.be), working on computational methods for drug discovery. -->
-<!-- Before, I worked at [VITO](https://vito.be) as an HPC engineer and data scientist, built deep learning solutions for image analysis and domain-specific language models.  -->
-<!-- I also managed HPC clusters and developed expertise in GPU computing and low-level profiling and performance optimization.  -->
-<!-- My background is physics.  -->
-<!-- During my PhD and postdoctoral research, I used molecular dynamics simulations to study the structural and dynamical properties of nano-membranes for water filtration applications. -->
-<!---->
-<!-- This is my personal space where I share my notes, experiments, and insights on topics I enjoy working on including molecular simulations, HPC, and machine learning. -->
-
+This is my personal space where I share technical notes, projects, experiments, and things I learn along the way.
 Hopefully, you’ll find something useful here!
 
 

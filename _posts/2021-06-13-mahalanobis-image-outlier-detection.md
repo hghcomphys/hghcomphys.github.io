@@ -11,6 +11,7 @@ tags:
 header:
   image: &image "/assets/outlier-detection/images/outlier_mnist.png"
   teaser: *image
+excerpt_separator: ""
 link: 
 classes: wide
 toc: false
@@ -21,6 +22,7 @@ layout: single
 show_date: true
 read_time: true
 ---
+
 
 <figure style="width: 100%" class="align-center">
   <img src="https://github.com/hghcomphys/hghcomphys.github.io/blob/master/assets/outlier-detection/images/outlier_mnist.png?raw=true" alt="">
