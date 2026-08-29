@@ -114,7 +114,11 @@ Nature Communications, impact factor 14.7 (2017)*<br>
 ### *GPU-Accelerated Computing with Python 3 and CUDA*
 *Niels Cautaerts | Hossein Ghorbanfekr*, Packt Publishing, 2026  
 ISBN: 978-1803248103 
-[View Book](https://a.co/d/03VXXelq)
+<!-- [Available on Amazon](https://a.co/d/03VXXelq) -->
+<br> 
+<a href="https://www.packtpub.com/en-be/product/gpu-accelerated-computing-with-python-3-and-cuda-9781803248103">
+<img  src="https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222" width="25%" /> 
+</a>
 
 ## Independent Projects 
 
