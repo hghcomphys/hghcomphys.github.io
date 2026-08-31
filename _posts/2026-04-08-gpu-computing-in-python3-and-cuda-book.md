@@ -1,5 +1,6 @@
 ---
 title: "Our New Book: GPU Computing with Python 3 and CUDA"
+published: false
 categories:
   - Python 
 tags:
@@ -12,6 +13,7 @@ tags:
 header:
   image: &image "https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222"
   teaser: *image
+excerpt_separator: ""
 link: 
 classes: wide
 toc: false

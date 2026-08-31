@@ -11,6 +11,7 @@ tags:
 header:
   image: &image "https://miro.medium.com/v2/resize:fit:720/format:webp/1*Ef5I9Je6yY4cVoFcgDAEqA.png"
   teaser: *image
+excerpt_separator: ""
 link: 
 classes: wide
 toc: false

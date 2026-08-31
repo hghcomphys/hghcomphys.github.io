@@ -1,5 +1,6 @@
 ---
 title: "How to Create a GSM Remote Alarm System"
+published: false
 categories:
   - Electronics
 tags:
@@ -9,6 +10,7 @@ tags:
 header:
   image: &image "https://github.com/hghcomphys/remote-alarm-system/blob/master/docs/esp32_remote_alarm.JPG?raw=true"
   teaser: *image
+excerpt_separator: ""
 # link: https://github.com/hghcomphys/remote-alarm-system
 classes: wide
 # toc: true

@@ -9,6 +9,7 @@ tags:
 header:
   image: &image "https://miro.medium.com/v2/resize:fit:720/format:webp/1*2VhYAZPXdUHuA6ReJ1BfJg.jpeg"
   teaser: *image
+excerpt_separator: ""
 link: 
 classes: wide
 toc: false
