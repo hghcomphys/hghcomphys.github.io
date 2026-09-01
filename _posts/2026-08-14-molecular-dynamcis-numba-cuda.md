@@ -26,12 +26,12 @@ read_time: true
 Have you ever wished you could write *CUDA kernels* without diving into C/C++?
 **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)** allows you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts, all while keeping the syntax simple.
-Numba-CUDA compiles Python code through LLVM and NVIDIA's NVVM infrastructure to generate PTX code at runtime, 
-making it more than a simple wrapper around *nvcc* to compile kernels like CUDA C++.
+Numba-CUDA is more than a simple wrapper around *nvcc* to compile kernels like CUDA C++.
+It compiles Python code through LLVM and NVIDIA's NVVM infrastructure to generate PTX code at runtime, 
 Yet, despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
-In this post, I’ll discuss the basics of writing CUDA kernels with Numba-CUDA and then put theory into practice by implementing a *Molecular Dynamics* simulation.
+In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA and then put theory into practice by implementing a *Molecular Dynamics* simulation.
 
 
 > In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how **JAX** can be used to implement a GPU-accelerated *Molecular Dynamics* simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
@@ -40,20 +40,23 @@ In this post, I’ll discuss the basics of writing CUDA kernels with Numba-CUDA 
 
 ## How to write and execute a CUDA kernel in Python using Numba-CUDA
 
-Before diving into technical details, it's important to have a basic understanding of how CUDA *execution model*
+Before diving into technical details, it's important to have a basic understanding of how **CUDA execution model**
 enables parallelism. 
 If you're already familiar with CPU parallelism, the extension to CUDA should be straight forward.
 
 
 ### CUDA execution model
 
+GPU speed up calculations through massive parallelism, where a large task is divided into smaller subtasks.
+These subtasks are distributed across hundreds or thousands of GPU cores and executed concurrently.
 In CUDA execution model, **threads** are the smallest execution units, 
 performing individual computations. 
 Additionally, **blocks** are groups of threads that can cooperate and synchronize. 
-Threads within a block share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
 A **grid** is a collection of blocks, defining the full parallel scope of a **kernel** launch. 
-The hierarchy of *grid* → *blocks* → *threads* enables scalable parallelism in CUDA, 
-with the GPU automatically distributing blocks across its multi-stream processors (SMs). 
+The grid represent entire workload which enables scalable parallelism in CUDA, 
+The underlying reasons for this hierarchical structure are related to hardware details.
+For example, threads within a block share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
+Or, GPU automatically distributing blocks across its multi-stream processors (SMs). 
 
 Diagram below shows an illustration of threads and blocks in a 1D grid:
 
@@ -85,8 +88,9 @@ This allows each CUDA thread to work on, for example, a different element of an 
 
 ### Writing a CUDA kernel 
 
-A kernel is the logic that is executed by each thread in the grid.
-To create a CUDA kernel with `numba.cuda` , a Python function must be decorated with `cuda.jit`, as follows:
+A kernel is the function that is executed by each thread in the CUDA grid.
+The **kernel execution configuration** defines how many threads are assigned to each block and how many blocks compose the gird.
+To create a CUDA kernel with `numba.cuda`, a Python function must be decorated with `cuda.jit`, as follows:
 
 
 ```python
@@ -165,6 +169,10 @@ import numpy as np
 x = np.linspace(0, 1, 1000, dtype=np.float32)
 y = np.linspace(0, 1, 1000, dtype=np.float32)
 ```
+
+Before a CUDA kernel can be executed on the GPU, the necessary data must be transferred from the **host** (the CPU and its memory) to the **device** (the GPU and its memory). 
+The host is responsible for launching kernels, migrating data transfers, and allocating memory in device memory.
+After computation, the host can request to tranfer the results back to host memory.
 
 Since CUDA kernel can only operate on arrays that reside in the memory of the GPU, this data must be copied to the device:
 
