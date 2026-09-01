@@ -12,6 +12,7 @@ header:
   image: &image "/assets/md-numba-cuda/cover.png"
   caption: ""
   teaser: *image
+excerpt_separator: ""
 link: 
 classes: wide
 toc: false
@@ -38,21 +39,21 @@ making it more than a wrapper around *nvcc* to compile kernels like CUDA C++.
 Yet, despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
-In this post, I’ll discuss the basics of writing CUDA kernels with Numba-CUDA and then put theory into practice by implementing a *Molecular Dynamics* simulation.
+In this post, I’ll discuss the basics of writing CUDA kernels with Numba-CUDA and then put theory into practice by implementing a *Molecular Dynamics* (MD) simulator.
 
 
-> In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how **JAX** can be used to implement a GPU-accelerated *Molecular Dynamics* simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
+> In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how **JAX** can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
 
 
 
-## How to write and execute a CUDA kernel in Python using Numba-CUDA
+## CUDA kernel in Python with Numba-CUDA
 
 Before diving into technical details, it's important to have a basic understanding of how CUDA *execution model*
 in general enables parallelism. 
 If you're already familiar with CPU parallelism, the extension to the CUDA should be straight forward.
 
 
-### CUDA execution model
+### How CUDA execution model works
 
 In CUDA execution model, **threads** are the smallest execution units, 
 performing individual computations. 
@@ -64,7 +65,7 @@ with the GPU automatically distributing blocks across its multi-stream processor
 
 Diagram below shows an illustration of threads and blocks in a 1D grid:
 
-<figure style="width: 800px" class="align-center">
+<figure style="width: 50%" class="align-center">
   <img src="/assets/md-numba-cuda/cuda-kernel.png" alt="">
   <figcaption>
   CUDA grid in 1D including threads and blocks
@@ -229,7 +230,7 @@ Now, let's put what have discussed into practice by creating a GPU-accelerated m
 We'll begin with a high-level overview of how MD simulation works, then we will implement the necessary components step by step while using the features provided by Numba-CUDA.
 
 
-## How to create a GPU-accelerated MD simulator
+## Implementing a GPU-Accelerated Molecular Dynamics Simulator
 
 <!-- ### How MD simulations work -->
 
