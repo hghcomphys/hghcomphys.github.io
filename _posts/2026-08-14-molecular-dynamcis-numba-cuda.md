@@ -35,21 +35,19 @@ Have you ever wished you could write *CUDA kernels* without diving into C/C++?
 **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)** allows you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts, all while keeping the syntax simple.
 Numba-CUDA is more than a simple wrapper around *nvcc* to compile kernels like CUDA C++.
-It compiles Python code through LLVM and NVIDIA's NVVM infrastructure to generate PTX code at runtime, 
-Yet, despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
+It compiles Python code, through LLVM and NVIDIA's NVVM compiler infrastructure, to generate PTX code at runtime. 
+Despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
-In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA and then put theory into practice by implementing a *Molecular Dynamics* simulation.
+In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA and then put theory into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator.
 
 > In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how **JAX** can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
 
 
 ## CUDA kernel in Python with Numba-CUDA
 
-It's important to have a basic understanding of how **CUDA execution model**
-enables parallelism. 
-If you're already familiar with CPU parallelism, the extension to CUDA should be straight forward.
-
+To begin, I'll introduce basics of the CUDA execution model and explain how it enables parallelism. 
+If you're already familiar with parallel programming on CPUs, many of the core concepts will feel familiar, making the transition to CUDA relatively straightforward.
 
 ### How CUDA execution model works
 
@@ -115,8 +113,7 @@ This is called *Dynamic dispatching* which works together with JIT compilation.
 
 Inside a running kernel, `cuda.blockDim` contains the shape of the blocks, `cuda.blockIdx` contains the position of the block
 with the running thread, and `cuda.threadIdx` contains the position of the running thread relative to its block.
-
-The global index in `numba.cuda` accordingly is written as 
+The **global index** in `numba.cuda` accordingly is written as 
 
 ```python
 index = cuda.blockIdx.x * cuda.blockDim.x + cuda.threadIdx.x;
@@ -135,7 +132,7 @@ Where, `1` is for 1D grid.
 Respectively, '2' and '3' for 2D and 3D grids.
 
 
-Let's write a simple kernel that calculate an element-wise multiplication of two arrays (`x` and `y`):
+Let's write a simple kernel that calculate an element-wise multiplication of two arrays:
 
 ```python
 from numba import cuda
@@ -153,7 +150,7 @@ while checking that the index is within the array bounds.
 
 
 {: .notice--warning}
-Numba-CUDA is currently in maintenance mode. 
+**Important:** Numba-CUDA is currently in maintenance mode. 
 New feature development is targeted towards [Numba-CUDA-MLIR](https://github.com/NVIDIA/numba-cuda-mlir)
 For migration guidance, see [Migration from Numba / Numba-CUDA](https://github.com/NVIDIA/numba-cuda-mlir#migration-from-numba--numba-cuda).
 In short, use `from numba_cuda_mlir import cuda` instead of `from numba import cuda`.
@@ -171,7 +168,7 @@ If the grid is 1D, these values are both integers.
 For 2D and 3D grid, these values must be *tuples* representing the number of threads and blocks per dimension.
 
 We can easily run the `product_kernel` kernel, 
-but fore that we need also preparing required input arrays
+but first we need also preparing required input arrays
 
 ```python
 import numpy as np
@@ -180,9 +177,10 @@ x = np.linspace(0, 1, 1000, dtype=np.float32)
 y = np.linspace(0, 1, 1000, dtype=np.float32)
 ```
 
-Before a CUDA kernel can be executed on the GPU, the necessary data must be transferred from the **host** (the CPU and its memory) to the **device** (the GPU and its memory). 
+Before a CUDA kernel can be executed on the GPU, 
+the necessary data must be transferred from the **host** (the CPU and its memory) to the **device** (the GPU and its memory). 
 The host is responsible for launching kernels, migrating data transfers, and allocating memory in device memory.
-After computation, the host can request to tranfer the results back to host memory.
+After computation, the host can request to transfer the results back to host memory.
 
 Since CUDA kernel can only operate on arrays that reside in the memory of the GPU, this data must be copied to the device:
 
@@ -192,12 +190,13 @@ y_dev = cuda.to_device(y)
 result_dev = cuda.device_array(x.shape, dtype=x.dtype)
 ```
 
-Where, `cuda.to_device` method copies `x` (`y`) from CPU host memory to GPU device memory.
-Also, `cuda.device_array` allocates an empty GPU array with the same shape and data type as `x`, intended to store the result.
+Where, `cuda.to_device` method copies `x` (`y`) from CPU host memory to GPU device memory
+and `cuda.device_array` allocates an empty GPU array with the same shape and data type as `x`, intended to store the result.
+The `x_dev`, `y_dev`, and `result_dev` are **device array** whose data reside in the GPU's memory.
+Device array can be passed to CUDA kernels, modified on the GPU, and later copy back to the host memory using `.copy_to_host()` method.
 
-
-The final step is determining the kernel launch configuration parameters based on the problem size.
-Let us choose a block size of 256 threads.
+The final step is to determine the kernel launch configuration based on the problem size. 
+We select a block size of 256 threads.
 
 ```python
 threads_per_block = 256
@@ -218,20 +217,98 @@ The `product_kernel` can now be invoked as follows:
 product_kernel[blocks_per_grid, threads_per_block](x_dev, y_dev, resutl_dev)
 ```
 
-To see the result, the data must be copied back to the host (CPU's memory):
+To see the result, the data must be copied back to the host:
 
 ```python
 result = result_dev.copy_to_host()
 ```
 
-DISCUSS_GLOBAL_VS_DEVICE_KERNELS
+### CUDA Memory Hierarchy 
 
-DISCUSS_MEMORY_LAYOUTS_INCKUDING_GLOBAL_AND_LOCAL
+Besides the CUDA execution model, another key concept is the **GPU memory hierarchy**. 
+GPUs expose several additional memory spaces to programmers, 
+each with different storage capacity and performance characteristics. 
+The most relevant ones for scientific computing are **Global** memory which is accessible by all threads.
+**Shared** memory is an on-chip memory region shared by all threads within the same block. 
+**Local** memory is private to each thread. 
+There are also specialized memory spaces such as **Constant** memory and **Texture** memory. 
+These can be beneficial for specific access patterns but are generally less important for the types of scientific workloads considered in this post.
 
-DISCUSS_DEVICE_VS_HOST_ARRAY
+Diagram below shows CUDA memory hierarchy in a grid as follows:
 
 
-<!-- We've already covered the basics of writing CUDA kernels in Python.  -->
+<figure style="width: 70%" class="align-center">
+  <img src="https://www.researchgate.net/publication/333806290/figure/fig13/AS:962245190225921@1606428539073/NVIDIA-CUDA-GPU-architecture-and-memory-hierarchy.png" alt="">
+  <figcaption> 
+  NVIDIA CUDA GPU architecture and memory hierarchy
+  </figcaption>
+</figure> 
+
+
+Each thread has its own set of **registers**, which are the fastest memory available on the GPU.
+Although both registers and local memory are private to a single thread, they differ significantly in performance and physical location. Registers are stored directly on the GPU's streaming multiprocessors (SMs) and provide the fastest possible access. 
+Local memory, on the other hand, is conceptually private to a thread but is typically backed by device memory and therefore has much higher latency. 
+<!-- Local memory is used when a thread requires private arrays or when the compiler runs out of available registers and spills variables from registers into local memory.  -->
+
+
+Each level of the memory hierarchy has its own constraints and usage patterns, which introduces additional complexity compared to CPU programming. 
+<!-- For example, -->
+<!-- Global memory can be accessed by all threads running on the GPU. -->
+<!-- Threads from the same block can cooperate through shared memory. -->
+<!-- Local memory is private to an individual thread and cannot be accessed by other threads. -->
+So far, we have discussed the device memory which typically refers to global memory. 
+This memory provides a large storage capacity, ranging from a few gigabytes to hundreds of gigabytes on modern accelerators, but it also has relatively high access latency compared to on-chip memory (1,000 versus 1-10 clock cycles).
+In the molecular dynamics application developed later in this post, we will store most simulation data in global memory, while relying on local storage where appropriate for temporary force vector computations.
+
+
+#### GPU Memory Access in Numbs-CUDA
+
+Numba exposes the GPU memory hierarchy directly, allowing us to explicitly work with global memory, shared memory, and local memory, each with different performance characteristics and use cases. 
+Global memory is the large device memory accessible by all threads and is typically used to store the primary input and output data of a kernel:
+
+```python
+array = cuda.device_array(1024, dtype=float32) 
+```
+
+Shared memory is a small but fast on-chip memory region that can be used for efficient data sharing among threads within the same thread block:
+
+```python
+cache = cuda.shared.array(256, dtype=float32)
+```
+
+A common pattern is for each thread to load a value from global memory into shared memory, synchronize with the other threads in the block, and then reuse the cached data multiple times.
+
+
+Local memory provides thread-private storage and is useful for temporary arrays required during a computation:
+
+```python
+tmp = cuda.local.array(8, dtype=float32)
+```
+
+Although temporary scalar variables are usually placed in registers automatically by the compiler, local memory can be used when a thread requires its own private buffer.
+
+Numba also supports atomic operations, which allow multiple threads to safely update the same memory location without introducing race conditions:
+
+```python
+cuda.atomic.add(histogram, bin_id, 1)
+```
+ 
+This is particularly useful for operations such as histograms, reductions, and counters.
+
+
+
+<!-- Numba exposes the GPU memory hierarchy directly, allowing to directly work with global memory, shared memory, and local memory, each with different performance characteristics and use cases.  -->
+<!-- For example, global memory is typically passed as a kernel argument (`x[idx]`), shared memory can be declared with `cuda.shared.array(...)` for fast data sharing within a thread block, and local memory can be allocated using `cuda.local.array(...)` for thread-private temporary storage.  -->
+<!---->
+<!-- Numba also supports atomic operations, which allow multiple threads to safely update a shared value without introducing race conditions.  -->
+<!-- For example, many threads can accumulate their contributions into a single variable `cuda.atomic.add(total, 0, array)`. -->
+
+
+{: .notice--info}
+Numba interoperates with GPU-enabled libraries such as CuPy and PyTorch, enabling data to be exchanged without copying it back to the CPU. 
+This makes it possible to combine custom CUDA kernels written in Python with high-level GPU libraries in a single application.
+
+
 Now, let's put what have discussed into practice by creating a GPU-accelerated molecular dynamics (MD) simulator which is used for studying materials at the atomic scale. 
 We'll begin with a high-level overview of how MD simulation works, then we will implement the necessary components step by step while using the features provided by Numba-CUDA.
 
