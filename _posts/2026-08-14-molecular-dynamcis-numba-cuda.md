@@ -34,19 +34,20 @@ read_time: true
 Have you ever wished you could write *CUDA kernels* without diving into C/C++?
 **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)** allows you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts, all while keeping the syntax simple.
-Numba-CUDA is more than a simple wrapper around *nvcc* to compile kernels like CUDA C++.
+This is more than a simple wrapper around *nvcc* to compile kernels like CUDA C++.
 It compiles Python code, through LLVM and NVIDIA's NVVM compiler infrastructure, to generate PTX code at runtime. 
 Despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
-In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA and then put theory into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator.
+In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA and then put discussed concepts into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator.
 
-> In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how **JAX** can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
+> In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how [JAX](https://docs.jax.dev/en/latest/index.html) can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
 
+Let's get started!
 
-## CUDA kernel in Python with Numba-CUDA
+## Writing and Executing CUDA kernel in Python with Numba-CUDA
 
-To begin, I'll introduce basics of the CUDA execution model and explain how it enables parallelism. 
+To begin, I'll introduce basics of the CUDA execution model and memory hierarchy. 
 If you're already familiar with parallel programming on CPUs, many of the core concepts will feel familiar, making the transition to CUDA relatively straightforward.
 
 ### How CUDA execution model works
@@ -223,6 +224,15 @@ To see the result, the data must be copied back to the host:
 result = result_dev.copy_to_host()
 ```
 
+When a kernel is launched from the host (CPU), control is almost immediately
+returned to the host thread, even while the GPU is still executing the kernel.
+That means the host may continue executing before the GPU finishes its work 
+This is called **Asynchronous execution**.
+If timing CUDA code, we must be careful that GPU operations are asynchronous by default.
+Adding `cuda.synchronize()` ensures that the timing includes the real GPU computation.
+
+
+
 ### CUDA Memory Hierarchy 
 
 Besides the CUDA execution model, another key concept is the **GPU memory hierarchy**. 
@@ -237,16 +247,17 @@ These can be beneficial for specific access patterns but are generally less impo
 Diagram below shows CUDA memory hierarchy in a grid as follows:
 
 
-<figure style="width: 70%" class="align-center">
+<figure style="width:60%" class="align-center">
   <img src="https://www.researchgate.net/publication/333806290/figure/fig13/AS:962245190225921@1606428539073/NVIDIA-CUDA-GPU-architecture-and-memory-hierarchy.png" alt="">
   <figcaption> 
-  NVIDIA CUDA GPU architecture and memory hierarchy
+  NVIDIA CUDA GPU memory hierarchy
   </figcaption>
 </figure> 
 
 
-Each thread has its own set of **registers**, which are the fastest memory available on the GPU.
-Although both registers and local memory are private to a single thread, they differ significantly in performance and physical location. Registers are stored directly on the GPU's streaming multiprocessors (SMs) and provide the fastest possible access. 
+Each thread has its own set of **registers** as well, which are the fastest memory available on the GPU (latency of a few cycles).
+Although both registers and local memory are private to a single thread, they differ performance and physical location. 
+Registers are stored directly on the GPU's streaming multiprocessors (SMs) and provide the fastest possible access. 
 Local memory, on the other hand, is conceptually private to a thread but is typically backed by device memory and therefore has much higher latency. 
 <!-- Local memory is used when a thread requires private arrays or when the compiler runs out of available registers and spills variables from registers into local memory.  -->
 
@@ -257,13 +268,13 @@ Each level of the memory hierarchy has its own constraints and usage patterns, w
 <!-- Threads from the same block can cooperate through shared memory. -->
 <!-- Local memory is private to an individual thread and cannot be accessed by other threads. -->
 So far, we have discussed the device memory which typically refers to global memory. 
-This memory provides a large storage capacity, ranging from a few gigabytes to hundreds of gigabytes on modern accelerators, but it also has relatively high access latency compared to on-chip memory (1,000 versus 1-10 clock cycles).
+This memory provides a large storage capacity, ranging from a few gigabytes to hundreds of gigabytes on modern accelerators, but it also has relatively high access latency compared to on-chip memory (1,000 versus 1-30 clock cycles).
 In the molecular dynamics application developed later in this post, we will store most simulation data in global memory, while relying on local storage where appropriate for temporary force vector computations.
 
 
 #### GPU Memory Access in Numbs-CUDA
 
-Numba exposes the GPU memory hierarchy directly, allowing us to explicitly work with global memory, shared memory, and local memory, each with different performance characteristics and use cases. 
+Numba provides direct access to the GPU memory hierarchy, enabling explicit use of global, shared, and local memory spaces, each with different performance characteristics and use cases. 
 Global memory is the large device memory accessible by all threads and is typically used to store the primary input and output data of a kernel:
 
 ```python
@@ -290,11 +301,11 @@ Although temporary scalar variables are usually placed in registers automaticall
 Numba also supports atomic operations, which allow multiple threads to safely update the same memory location without introducing race conditions:
 
 ```python
-cuda.atomic.add(histogram, bin_id, 1)
+cuda.atomic.add(histogram, index, 1)
 ```
- 
-This is particularly useful for operations such as histograms, reductions, and counters.
 
+It increments the element `histogram[index]` by `1` while ensuring that concurrent updates from multiple threads are handled correctly. 
+This is particularly useful for operations such as histograms, reductions, and counters.
 
 
 <!-- Numba exposes the GPU memory hierarchy directly, allowing to directly work with global memory, shared memory, and local memory, each with different performance characteristics and use cases.  -->
@@ -305,7 +316,7 @@ This is particularly useful for operations such as histograms, reductions, and c
 
 
 {: .notice--info}
-Numba interoperates with GPU-enabled libraries such as CuPy and PyTorch, enabling data to be exchanged without copying it back to the CPU. 
+Numba also interoperates with other GPU-enabled libraries such as [CuPy](https://cupy.dev/) and [PyTorch](https://pytorch.org/), enabling data to be exchanged without copying it back to the CPU. 
 This makes it possible to combine custom CUDA kernels written in Python with high-level GPU libraries in a single application.
 
 
@@ -317,21 +328,30 @@ We'll begin with a high-level overview of how MD simulation works, then we will 
 
 <!-- ### How MD simulations work -->
 
-ADD_BRIEF_MD_INTRODUCTION
+Molecular Dynamics (MD) is a technique often used for predicting the behavior of materials at the atomic scale. 
+We will simulate a simple atomic system of an ideal gas, such as helium, in two dimensions, to minimize complex technical
+details that may require specialized expertise. As our main focus, Numba CUDA will be used to accelerate 
+the computationally demanding kernels, including the particle-particle interactions and time integration.
 
 
-MD simulation can be broken down into four main steps: 
+MD simulation can be broken down into four main components: 
 
-1. **System initialization:** The first step is initializing the state of our collection of particles and choosing simulation settings. 
-2. **Atomic interactions:** The next step is calculating the interactions between the particles, which determine how particles move in response to forces. These interactions are governed by the total potential energy respect to position.
-3. **Time integration:** Once the forces between particles are calculated, the next step is to determine how the particles move over time. This is done by solving Newton's equations of motion for each particle using time integration.
-4. **Data collection:** While the simulation runs, a subset of the information must be periodically extracted for later analysis. 
+1. **System initialization** initializes the state of our collection of particles and choosing simulation settings. 
+2. **Atomic interactions** calculates the interactions between the particles, which determine how particles move in response to forces. 
+3. **Time integration** determines how the particles move over time via solving Newton's equations of motion for each particle.
+4. **Data collection:** saves a subset of the information which must be periodically extracted for on-the-fly or later analysis. 
 
 The flowchart below illustrates how the various components of MD simulations fit together.
 
-<img src="/assets/md-numba-cuda/md_flowchart.drawio.png" width="400" />
 
-Figure: Key steps for any MD simulation, including system initialization, atomic interactions, time integration, and data collection.
+<figure style="width:70%" class="align-center">
+  <img src="/assets/md-numba-cuda/md_flowchart.drawio.png" alt="">
+  <figcaption> 
+  Key components in molecular dynamics (MD) simulation.
+  </figcaption>
+</figure> 
+
+
 
 Time is discretized into small intervals called *time step* ($\delta t$).
 For each time step, there is an iterative process between force calculations and the time integration, which updates the positions and velocities of the particles.
@@ -341,7 +361,7 @@ In what follows, I will elaborate on each step and create an implementation for 
 
 ### 1. System initialization 
 
-The system we want to model is a collection of particles.
+The system we want to model is a collection of particles (or atoms).
 Particles are initialized with starting positions and velocities, based on experimental data and physical conditions such as desired temperature and pressure. 
 In an MD simulation, particles are constrained to a finite region of space called a _simulation box_.
 To mimic an infinite system, which is a good approximation for real liquids, gases, and bulk materials, the boundaries of this box are usually defined to be periodic.
@@ -362,10 +382,10 @@ import math
 import numpy as np
 from numba import cuda
 from numpy.typing import NDArray
-from typing import NamedTuple, TextIO
+from typing import TypeAlias, TextIO
 
-FLOAT = np.float64
-Array = NDArray[FLOAT]
+FLOAT: TypeAlias = np.float64
+Array: TypeAlias = NDArray[FLOAT]
 ```
 
 In scientific simulations, _float64_ precision is usually prefered to reduce numerical instability due to the accumulation of round-off errors.
@@ -381,6 +401,8 @@ More importantly, `numba.cuda` JIT-compiled functions accept `tuple` and named t
 
 
 ```python
+from typing import NamedTuple, TypeAlias, TextIO
+
 class SimulationParameters(NamedTuple):
     num_atoms: int
     time_step: float
@@ -390,9 +412,9 @@ class SimulationParameters(NamedTuple):
 ```
 
 In our simulation, we will set the number of atoms `num_atoms=100` and the initial atom spacing `atom_spacing=2.5`.
-The `time_step` represents the interval between simulation updates and is set to $0.0001$. 
+The `time_step` represents the interval between simulation updates and is set to 0.0001. 
 The simulation box side length `box_length` is calculated based on the number of atoms and their spacing.
-Finally, the velocity standard deviation `velocity_std` is set to $10.0$.
+Finally, the velocity standard deviation `velocity_std` is set to 10.0.
 <!-- `box_length` is calculated as the square root of `num_atoms` multiplied by `lattice_distance`,  -->
 <!-- this value in physics is proportional to the temperature of the system.  -->
 <!-- We print the parameter instance containing all field values, to provide a clear and structured summary of the simulation parameters. -->
@@ -414,7 +436,12 @@ params = SimulationParameters(
 In our demo system these values don't have a real meaning since we don't use any units.
 In real-world simulations, these parameters have units and their value needs to be determined based on experiments or other types of calculations.
 
-To set the box length, we considered both the number of atoms and the spacing between nearest neighbors. In general, atoms can be distributed evenly within a box using the formula $N^{1/dim} \times \text{atom spacing}$, where N is the number of atoms and dim represents the dimension of the box. In our case, since the dimension is $2$, we use the square root.
+
+{: .notice--info}
+To set the box length, we considered both the number of atoms and the spacing between nearest neighbors. 
+In general, atoms can be distributed evenly within a box using the formula $N^{1/dim} \times \text{atom spacing}$, 
+where N is the number of atoms and dim represents the dimension of the box. 
+In our case, since the dimension is 2, we use the square root.
 
 
 #### Particles
@@ -462,9 +489,14 @@ We displace all the atoms by half of the lattice spacing to center them in the s
 Due to periodic boundary conditions, this is somewhat arbitrary, but we don't want our atoms to start on the boundary.
 Note that the initial positioning does not reflect a realistic physical arrangement, it is simply a way used to distribute atoms without causing overlaps.
 
-<img src="/assets/md-numba-cuda/configuration_100atoms.png" width="350" />
 
-Figure: The initial configuration of $100$ atoms in a periodic simulation box.
+<figure style="width:70%" class="align-center">
+  <img src="/assets/md-numba-cuda/configuration_100atoms.png" alt="">
+  <figcaption> 
+  The initial configuration of 100 atoms in a periodic simulation box.
+  </figcaption>
+</figure> 
+
 
 Second, `initialize_velocity` assigns random initial velocities to all atoms. 
 The velocities are sampled from a 2D standard normal distribution which is scaled by the `velocity_std` parameter.
@@ -475,11 +507,10 @@ The velocities are adjusted by subtracting the mean velocity in each $x$ and $y$
 
 ```python
 def initialize_velocity(
-    params: SimulationParameters, 
-    seed: int = 1234,
+    params: SimulationParameters,
+    rng: np.random.Generator,
 ) -> Array:
-    np.random.seed(seed)
-    velocity = np.random.randn(params.num_atoms, 2).astype(FLOAT)
+    velocity = rng.normal(size=(params.num_atoms, 2)).astype(FLOAT)
     velocity *= params.velocity_std
     velocity -= velocity.mean(axis=0)
     return velocity
@@ -496,7 +527,8 @@ position = initialize_position(params)
 position_dev = cuda.device_array(position.shape, dtype=FLOAT, order="F")
 cuda.to_device(position, to=position_dev)
 
-velocity = initialize_velocity(params)
+rng = np.random.default_rng(1234)
+velocity = initialize_velocity(params, rng)
 velocity_dev = cuda.device_array(velocity.shape, dtype=FLOAT, order="F")
 cuda.to_device(velocity, to=velocity_dev)
 
@@ -510,8 +542,7 @@ This array is simply allocated on the device.
 
 For the device arrays we select *column major* (`F`) memory layout rather than the default *row major* (`C`). 
 For the CUDA kernels we will define, this alignment minimizes global memory accesses because threads in the same warp access contiguous memory addresses.
-This coalesced data arrangement will improve the performance on the GPU.
-
+This **coalesced** data arrangement will improve the performance on the GPU.
 
 
 ### 2. Atomic interactions
@@ -621,8 +652,7 @@ UPDATE_CODE_USING_AMARDUS
 
 <!-- The `@cuda.jit` decorator in Numba is used to JIT compile this function into an optimized machine code that can be executed directly on GPU hardware.  -->
 We first allocated an array `force` with `shape=(2,)` in the GPU *local* memory.
-This array serves as a fast temporary scratch space to store the $x$ and $y$ components of the computed net force on each atom.
-
+<!-- This array serves as a fast temporary scratch space to store the $x$ and $y$ components of the computed net force on each atom. -->
 Each thread computes the net force acting on one or multiple atoms based on `index_i`.
 The loop over `index_i` ensures that each thread receives the correct index within the grid, even if the number of atoms exceeds the grid size.
 This can occur in very large systems containing many atoms.
@@ -751,7 +781,7 @@ def verlet_integration_position(
 The new position `r[idx, dim]` is obtained using the current velocity and force values according to Equation 5.
 The x and y position can be updated independently, so we have an inner loop for the dimensions.
 <!-- This I don't get, how does adding 10L achieve anything? -->
-The additional term $10.0 * L$ ensures that the position remains within the bounds of the simulation box `[0, L)` after updating. 
+The additional term `10.0 * L` ensures that the position remains within the bounds of the simulation box `[0, L)` after updating. 
 This is followed by `math.fmod(..., L)` to enforce periodic boundary conditions, ensuring that atoms wrap around if they go outside the simulation box.
 This step is crucial because without it, new positions could potentially become negative, which can lead to issues when applying periodic boundary conditions.
 
@@ -776,8 +806,6 @@ def verlet_integration_velocity(
         for dim in range(2):
             v[index, dim] += 0.5 * dt * f[index, dim]
 ```
-
-ADD_CODE_DESCRIPTION
 
 
 ### 4. Data collection
@@ -823,8 +851,8 @@ def get_temperature(velocity: Array) -> FLOAT:
 
 <!-- ### GPU-accelerated simulation -->
 
-Finally, we connect all the different pieces in the `simulate` function to run our MD simulation:
-
+Finally, we connect all the different pieces in the `simulate` function to run our MD simulation.
+We will iteratively apply these force and time integration kernels within a for loop, enabling us to run the MD simulation.
 
 ```python
 def simulate(
@@ -864,7 +892,7 @@ This function simulates the system for predefined number of time steps, allowing
 Over time, the system tends to reach an equilibrium state where properties (i.e., temperature) stabilize. 
 We also collect properties like position of atoms and temperature during the simulation.
 
-We simulate the system for the next $1000$ time steps and collecting current temperature and save atom positions every $100$ steps. 
+We simulate the system for the next 1000 time steps and collecting current temperature and save atom positions every $100$ steps. 
 
 
 ```python
@@ -875,27 +903,22 @@ Output:
 
 ```bash
 GPU-accelerated Molecular Dynamics Simulation
-Lennard-Jones Particles in 2D a Periodic Box
+Lennard-Jones Particles in a 2D Periodic Box
 Number of atoms: 100
-Step    Time         Temperature
+Step Time Temperature
 --------------------------------
-0       0.00000000   95.76379342
-100     0.01000000   95.76576249
-200     0.02000000   95.77276531
-300     0.03000000   95.78980074
-400     0.04000000   95.82678932
-500     0.05000000   95.40372851
-600     0.06000000   95.13797121
-700     0.07000000   91.39618691
-800     0.08000000   94.69831916
-900     0.09000000   95.79469347
+0 0.00000000 95.76379342
+100 0.01000000 95.76576249
+200 0.02000000 95.77276531
+...
+900 0.09000000 95.79469347
 Done.
 ```
 
 
-ADD_BIG_SYSTEM
 
-ADD_CODE_REF
+{: .notice--info}
+A complete working example of the GPU-accelerated MD simulator is provided in [this](https://github.com/PacktPublishing/GPU-Accelerated-Computing-with-Python-3-and-CUDA/blob/main/chapter_13/chapter_13_code.ipynb) jupyer notebook.
 
 
 <!-- ## Performance analysis -->
@@ -906,16 +929,16 @@ ADD_CODE_REF
 ### Benchmarks
 
 To illustrate the runtime performance of our GPU implementation of an MD simulator, 
-I ran it for different system sizes of $100$, $1,000$, and $10,000$ atoms and compare to two CPU implementations:
+I ran it for different system sizes of 100, 1,000, and 10,000 atoms and compare to two CPU implementations:
 
-1. A serial version of the same code optimized with Numba’s just-in-time (JIT) compilation. 
-2. A parallelized version on an 8-core CPU using Numba’s JIT along with `prange` for multithreading. 
+1. A serial version of the same code optimized with Numba’s just-in-time compilation. 
+2. A parallel version on an 8-core CPU using Numba’s JIT along with `prange` for multi-threading. 
 
 The GPU version was run on *A100*, a data center GPU, and additionally *RTX Ti 2080*, a consumer GPU. 
 The following figure shows the elapsed runtime. 
 Note that the y axis is logarithmically scaled, and precision is in `float64`.
 
-<figure style="width: 70%" class="align-center">
+<figure style="width:70%" class="align-center">
   <img src="/assets/md-numba-cuda/benchmarks.png" alt="">
   <figcaption> 
   Our MD simulation benchmark runs on a different system for 1,000 time steps
@@ -937,13 +960,15 @@ I'll discuss the *linear scaling MD* in a separate post in near future.
 
 ## Further reading
 
+
 If you’re interested in learning more about GPU programming and scientific computing with Python and CUDA, we cover these topics in more detail in our book:
 
 *GPU-Accelerated Computing with Python 3 and CUDA*
 *Niels Cautaerts | Hossein Ghorbanfekr*
 *Packt Publishing, 2026*  
-[Learn more about the book →](https://a.co/d/03VXXelq)
+[Learn more about the book](https://www.packtpub.com/en-be/product/gpu-accelerated-computing-with-python-3-and-cuda-9781803248103)
+<br><img src="https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222" width="25%" />
 
-<img src="https://content.packt.com/_/image/original/B18558/cover_image.jpg?version=1775123222" width="25%" />
-
+{: .notice--info}
+The example notebooks associated with this book is openly available on [GitHub](https://github.com/PacktPublishing/GPU-Accelerated-Computing-with-Python-3-and-CUDA).
 
