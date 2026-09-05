@@ -247,12 +247,13 @@ These can be beneficial for specific access patterns but are generally less impo
 Diagram below shows CUDA memory hierarchy in a grid as follows:
 
 
-<figure style="width:60%" class="align-center">
-  <img src="https://www.researchgate.net/publication/333806290/figure/fig13/AS:962245190225921@1606428539073/NVIDIA-CUDA-GPU-architecture-and-memory-hierarchy.png" alt="">
+<figure style="width:70%" class="align-center">
+  <img src="https://www.researchgate.net/publication/331453189/figure/fig6/AS:960232402464789@1605948653309/CUDA-hierarchical-memory-model-device-GPU-can-communicate-with-host-CPU-through.png" alt="">
   <figcaption> 
-  NVIDIA CUDA GPU memory hierarchy
+  NVIDIA CUDA GPU memory hierarchy 
   </figcaption>
 </figure> 
+<!-- href="https://www.researchgate.net/publication/331453189_Acceleration_strategies_for_explicit_finite_element_analysis_of_metal_powder-based_additive_manufacturing_processes_using_graphical_processing_units"> -->
 
 
 Each thread has its own set of **registers** as well, which are the fastest memory available on the GPU (latency of a few cycles).
@@ -366,8 +367,7 @@ Particles are initialized with starting positions and velocities, based on exper
 In an MD simulation, particles are constrained to a finite region of space called a _simulation box_.
 To mimic an infinite system, which is a good approximation for real liquids, gases, and bulk materials, the boundaries of this box are usually defined to be periodic.
 This means that when an atom moves outside one boundary, it reappears on the opposite side, mimicking continuous space.
-This concept is also known as periodic boundary conditions (PBC) and helps to avoid edge effects, which would happen if bounaries were rigid.
-
+<!-- This concept is also known as periodic boundary conditions (PBC) and helps to avoid edge effects, which would happen if bounaries were rigid. -->
 Here, we consider a system composed of a single type of atom positioned within a 2D box.
 This setup restricts the particles to movement in the x-y plane; motion along the z-axis is not allowed.
 
@@ -388,10 +388,10 @@ FLOAT: TypeAlias = np.float64
 Array: TypeAlias = NDArray[FLOAT]
 ```
 
-In scientific simulations, _float64_ precision is usually prefered to reduce numerical instability due to the accumulation of round-off errors.
+In scientific simulations, **_float64_** precision is usually prefered to reduce numerical instability due to the accumulation of round-off errors.
 However, there are reasons to prefer _float32_ precision.
-GPUs are usually hardware optimized for 32-bit operations, so using float32 generally results in better performance.
-float32 requires half the number of bytes compared to float64, so it is more economical with respect to memory usage and bandwidth.
+GPUs are usually hardware optimized for 32-bit operations, so using _float32_ generally results in better performance.
+_float32_ requires half the number of bytes compared to _float64_, so it is more economical with respect to memory usage and bandwidth.
 To be flexible, we defined an alias `FLOAT` which we can set to either float32 or float64.
 Additionally, we define the alias `Array` for multidimensional arrays that can hold elements of the type specified by `FLOAT`.
 
@@ -547,7 +547,7 @@ This **coalesced** data arrangement will improve the performance on the GPU.
 
 ### 2. Atomic interactions
 
-Potential energy determines how particles interact in any physical system. Like water that flows downhill, a system tends to evolve to a state of minimal potential. Forces experienced by particles can be derived from the *negative gradient* of the potential respect to their positions. Forces give rise to motion of the particles, and this will be a direction that reduces the potential. 
+Potential energy determines how particles interact in any physical system. Like water that flows downhill, a system tends to evolve to a state of minimal potential. Forces experienced by particles can be derived from the **negative gradient** of the potential respect to their positions. Forces give rise to motion of the particles, and this will be a direction that reduces the potential. 
 To calculate the potential energy between atoms, we use a set of mathematical functions and parameters. It captures the effects of bonded and non-bonded interaction between atoms as a function of their separation distance. The parameters for a potential are obtained from either experimental data or quantum mechanical calculations.
 
 
@@ -573,7 +573,7 @@ The $\sigma$ parameter is the distance at which the potential is zero, represent
 <!---->
 
 {: .notice--info}
-For computational efficiency, a *cutoff radius* is typically applied to restrict the range of interactions. 
+For computational efficiency, a **cutoff radius** is often applied to restrict the range of interactions. 
 Interactions between particles beyond this cutoff are assumed to be zero, so calculations are only performed for particles within the specified range.
 
 
@@ -615,7 +615,8 @@ $$
 
 This will give us the net force acting on particle $i$ due to all other particles in the system while excluding the self interaction.
 
-Until now, we've derived the formulas needed to calculate the forces acting on each atom (Equation 4). Next, we'll explore how we can leverage the parallel processing capabilities of the GPU to perform these calculations in parallel with CUDA.
+Until now, we've derived the formulas needed to calculate the forces acting on each atom. 
+Next, we'll explore how we can use GPU to perform these calculations in parallel with Numba-CUDA.
 
 
 #### Parallelizing force calculations
@@ -648,10 +649,10 @@ def compute_force(
         fi[0], fi[1] = force[0], force[1]
 ```
 
-UPDATE_CODE_USING_AMARDUS
+<!-- UPDATE_CODE_USING_AMARDUS -->
 
 <!-- The `@cuda.jit` decorator in Numba is used to JIT compile this function into an optimized machine code that can be executed directly on GPU hardware.  -->
-We first allocated an array `force` with `shape=(2,)` in the GPU *local* memory.
+We first allocated an array `force` with `shape=(2,)` in the GPU *local* memory (using register instead?).
 <!-- This array serves as a fast temporary scratch space to store the $x$ and $y$ components of the computed net force on each atom. -->
 Each thread computes the net force acting on one or multiple atoms based on `index_i`.
 The loop over `index_i` ensures that each thread receives the correct index within the grid, even if the number of atoms exceeds the grid size.
@@ -756,8 +757,7 @@ This process repeats, with forces recalculated at each step to gradually build t
 #### Parallelizing *Verlet* integrator
 
 We'll follow the same approach to speed up the time integration as we used to calculate the forces: we parallelize over the all the atoms.
-
-The CUDA kernel below updates the position of atoms:
+CUDA kernel below updates the position of atoms:
 
 
 ```python
@@ -960,6 +960,12 @@ I'll discuss the *linear scaling MD* in a separate post in near future.
 
 ## Further reading
 
+There are many additional topics that we have not covered in this post. 
+For example, using multiple CUDA streams to overlap kernel execution with host-device data transfers, 
+improving data alignment and memory coalescing for better memory throughput, 
+and applying various optimization techniques to maximize GPU utilization and hiding latency. 
+Numba-CUDA can also scale computations across multiple GPUs when combined with a Dask cluster, enabling larger and more complex workloads to be processed efficiently. 
+Another important area is profiling and debugging GPU applications using the tools provided by Numba-CUDA, as well as NVIDIA profiling tools such as Nsight Systems and Nsight Compute, which help identify performance bottlenecks and verify kernel correctness.
 
 If you’re interested in learning more about GPU programming and scientific computing with Python and CUDA, we cover these topics in more detail in our book:
 
