@@ -1,5 +1,5 @@
 ---
-title: "How Numba Enables CUDA Kernels in Python: Molecular Dynamics Showcase"
+title: "How Numba Enables Low-Level CUDA in Python: A Molecular Dynamics Showcase"
 categories:
   - Python 
   - MolecularDynamics
@@ -39,13 +39,13 @@ It compiles Python code, through LLVM and NVIDIA's NVVM compiler infrastructure,
 Despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
-In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA and then put discussed concepts into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator.
+In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA (Part 1) and then put discussed concepts into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator (Part 2).
 
 > In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how [JAX](https://docs.jax.dev/en/latest/index.html) can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
 
 Let's get started!
 
-## Writing and Executing CUDA kernel in Python with Numba-CUDA
+## **Part 1:** Writing and Executing CUDA kernel in Python with Numba-CUDA
 
 To begin, I'll introduce basics of the CUDA execution model and memory hierarchy. 
 If you're already familiar with parallel programming on CPUs, many of the core concepts will feel familiar, making the transition to CUDA relatively straightforward.
@@ -61,7 +61,6 @@ A **grid** is a collection of blocks, defining the full parallel scope of a **ke
 The grid represent entire workload which enables scalable parallelism in CUDA, 
 The underlying reasons for this hierarchical structure are related to hardware details.
 For example, threads within a block share fast on-chip memory and can communicate, but threads in different blocks cannot directly interact.
-Or, GPU automatically distributing blocks across its multi-stream processors (SMs). 
 
 Diagram below shows an illustration of threads and blocks in a 1D grid:
 
@@ -108,7 +107,7 @@ def my_cuda_kernel():
 
 <!-- {: .notice--info} -->
 JIT (Just-In-Time) compilation means that code is compiled at runtime, when it is needed, rather than being fully compiled beforehand. 
-Here, `cuda.jit` compiles Python the function into a CUDA GPU kernel when it is first called.
+Here, `cuda.jit` compiles the function into a CUDA GPU kernel when it is first called.
 Furthermore, Numba checks the argument types at runtime and dispatches the call to a matching compiled specialization; if non exists, JIT compilation creates one. 
 This is called *Dynamic dispatching* which works together with JIT compilation.  
 
@@ -151,7 +150,7 @@ while checking that the index is within the array bounds.
 
 
 {: .notice--warning}
-**Important:** Numba-CUDA is currently in maintenance mode. 
+Numba-CUDA is currently in maintenance mode. 
 New feature development is targeted towards [Numba-CUDA-MLIR](https://github.com/NVIDIA/numba-cuda-mlir)
 For migration guidance, see [Migration from Numba / Numba-CUDA](https://github.com/NVIDIA/numba-cuda-mlir#migration-from-numba--numba-cuda).
 In short, use `from numba_cuda_mlir import cuda` instead of `from numba import cuda`.
@@ -178,11 +177,9 @@ x = np.linspace(0, 1, 1000, dtype=np.float32)
 y = np.linspace(0, 1, 1000, dtype=np.float32)
 ```
 
-Before a CUDA kernel can be executed on the GPU, 
-the necessary data must be transferred from the **host** (the CPU and its memory) to the **device** (the GPU and its memory). 
+The necessary data must be transferred from the **host** (the CPU and its memory) to the **device** (the GPU and its memory). 
 The host is responsible for launching kernels, migrating data transfers, and allocating memory in device memory.
 After computation, the host can request to transfer the results back to host memory.
-
 Since CUDA kernel can only operate on arrays that reside in the memory of the GPU, this data must be copied to the device:
 
 ```python
@@ -218,6 +215,13 @@ The `product_kernel` can now be invoked as follows:
 product_kernel[blocks_per_grid, threads_per_block](x_dev, y_dev, resutl_dev)
 ```
 
+{: .notice--info}
+At the hardware level, 
+GPU automatically distributing blocks across its multi-stream processors (SMs). 
+Each block consists of many threads, which are further organized into groups of 32 threads called **warps**.
+A warp is the basic execution unit on the SM, meaning that its 32 threads execute the same instruction concurrently.
+An SM can have multiple blocks and warps active at the same time, depending on available resources such as registers and shared memory.
+
 To see the result, the data must be copied back to the host:
 
 ```python
@@ -232,10 +236,9 @@ If timing CUDA code, we must be careful that GPU operations are asynchronous by 
 Adding `cuda.synchronize()` ensures that the timing includes the real GPU computation.
 
 
-
 ### CUDA Memory Hierarchy 
 
-Besides the CUDA execution model, another key concept is the **GPU memory hierarchy**. 
+Another key concept is the **CUDA memory hierarchy**. 
 GPUs expose several additional memory spaces to programmers, 
 each with different storage capacity and performance characteristics. 
 The most relevant ones for scientific computing are **Global** memory which is accessible by all threads.
@@ -270,7 +273,7 @@ Each level of the memory hierarchy has its own constraints and usage patterns, w
 <!-- Local memory is private to an individual thread and cannot be accessed by other threads. -->
 So far, we have discussed the device memory which typically refers to global memory. 
 This memory provides a large storage capacity, ranging from a few gigabytes to hundreds of gigabytes on modern accelerators, but it also has relatively high access latency compared to on-chip memory (1,000 versus 1-30 clock cycles).
-In the molecular dynamics application developed later in this post, we will store most simulation data in global memory, while relying on local storage where appropriate for temporary force vector computations.
+In the molecular dynamics application developed later in this post, we will store most simulation data in the global memory, while relying on local storage where appropriate for temporary force vector computations.
 
 
 #### GPU Memory Access in Numbs-CUDA
@@ -317,7 +320,9 @@ This is particularly useful for operations such as histograms, reductions, and c
 
 
 {: .notice--info}
-Numba also interoperates with other GPU-enabled libraries such as [CuPy](https://cupy.dev/) and [PyTorch](https://pytorch.org/), enabling data to be exchanged without copying it back to the CPU. 
+Numba also **interoperates** with other GPU-enabled libraries such as [CuPy](https://cupy.dev/)
+<!-- and [PyTorch](https://pytorch.org/),  -->
+enabling data to be exchanged without copying it back to the CPU. 
 This makes it possible to combine custom CUDA kernels written in Python with high-level GPU libraries in a single application.
 
 
@@ -325,7 +330,7 @@ Now, let's put what have discussed into practice by creating a GPU-accelerated m
 We'll begin with a high-level overview of how MD simulation works, then we will implement the necessary components step by step while using the features provided by Numba-CUDA.
 
 
-## Implementing a GPU-Accelerated Molecular Dynamics Simulator
+## **Part 2:** Implementing a GPU-Accelerated Molecular Dynamics Simulator
 
 <!-- ### How MD simulations work -->
 
@@ -342,16 +347,17 @@ MD simulation can be broken down into four main components:
 3. **Time integration** determines how the particles move over time via solving Newton's equations of motion for each particle.
 4. **Data collection:** saves a subset of the information which must be periodically extracted for on-the-fly or later analysis. 
 
+In the “System initialization” section, we will allocate the necessary arrays on the GPU. 
+In the “Atomic Interactions” and “Time Integration” sections, we will implement CUDA kernels to compute the forces and update the particles, respectively.
+
 The flowchart below illustrates how the various components of MD simulations fit together.
 
-
-<figure style="width:70%" class="align-center">
+<figure style="width:40%" class="align-center">
   <img src="/assets/md-numba-cuda/md_flowchart.drawio.png" alt="">
   <figcaption> 
   Key components in molecular dynamics (MD) simulation.
   </figcaption>
 </figure> 
-
 
 
 Time is discretized into small intervals called *time step* ($\delta t$).
@@ -490,7 +496,7 @@ Due to periodic boundary conditions, this is somewhat arbitrary, but we don't wa
 Note that the initial positioning does not reflect a realistic physical arrangement, it is simply a way used to distribute atoms without causing overlaps.
 
 
-<figure style="width:70%" class="align-center">
+<figure style="width:40%" class="align-center">
   <img src="/assets/md-numba-cuda/configuration_100atoms.png" alt="">
   <figcaption> 
   The initial configuration of 100 atoms in a periodic simulation box.
