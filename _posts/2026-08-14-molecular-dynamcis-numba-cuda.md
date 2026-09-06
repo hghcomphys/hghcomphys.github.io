@@ -214,7 +214,7 @@ The `product_kernel` can now be invoked as follows:
 product_kernel[blocks_per_grid, threads_per_block](x_dev, y_dev, resutl_dev)
 ```
 
-{: .notice--info}
+<!-- {: .notice--info} -->
 At the hardware level, 
 GPU automatically distributing blocks across its multi-stream processors (SMs). 
 Each block consists of many threads, which are further organized into groups of 32 threads called **warps**.
@@ -349,7 +349,7 @@ In the atomic Interactions and time Integration steps, we will implement CUDA ke
 Finally, the last step transfers data to the host for further analysis.
 The flowchart below illustrates how the various components of MD simulations fit together.
 
-<figure style="width:40%" class="align-center">
+<figure style="width:50%" class="align-center">
   <img src="/assets/md-numba-cuda/md_flowchart.drawio.png" alt="">
   <figcaption> 
   Key components in molecular dynamics (MD) simulation.
