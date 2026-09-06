@@ -34,12 +34,12 @@ read_time: true
 Have you ever wished you could write *CUDA kernels* without diving into C/C++?
 **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)** allows you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts, all while keeping the syntax simple.
-This is more than a simple wrapper around *nvcc* to compile kernels like CUDA C++.
-It compiles Python code, through LLVM and NVIDIA's NVVM compiler infrastructure, to generate PTX code at runtime. 
+This is more than a basic wrapper around *nvcc* to compile kernels like CUDA C++.
+Numba compiles Python code, through LLVM and NVIDIA's NVVM compiler infrastructure, to generate PTX code at runtime. 
 Despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
-In this post, I’ll discuss the basics of writing and executing CUDA kernel with Numba-CUDA (Part 1) and then put discussed concepts into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator (Part 2).
+In this post, I’ll discuss fundamentals of CUDA kernels with Numba-CUDA (Part 1) and then put discussed concepts into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator (Part 2).
 
 > In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how [JAX](https://docs.jax.dev/en/latest/index.html) can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
 
@@ -47,7 +47,7 @@ Let's get started!
 
 ## **Part 1:** Writing and Executing CUDA kernel in Python with Numba-CUDA
 
-To begin, I'll introduce basics of the CUDA execution model and memory hierarchy. 
+To begin, I'll cover basics of the **CUDA execution model** and **memory hierarchy**. 
 If you're already familiar with parallel programming on CPUs, many of the core concepts will feel familiar, making the transition to CUDA relatively straightforward.
 
 ### How CUDA execution model works
@@ -238,7 +238,7 @@ Adding `cuda.synchronize()` ensures that the timing includes the real GPU comput
 
 ### CUDA Memory Hierarchy 
 
-Another key concept is the **CUDA memory hierarchy**. 
+Another key concept is the CUDA memory hierarchy. 
 GPUs expose several additional memory spaces to programmers, 
 each with different storage capacity and performance characteristics. 
 The most relevant ones for scientific computing are **Global** memory which is accessible by all threads.
@@ -250,13 +250,14 @@ These can be beneficial for specific access patterns but are generally less impo
 Diagram below shows CUDA memory hierarchy in a grid as follows:
 
 
-<figure style="width:70%" class="align-center">
+<figure style="width:60%" class="align-center">
   <img src="https://www.researchgate.net/publication/331453189/figure/fig6/AS:960232402464789@1605948653309/CUDA-hierarchical-memory-model-device-GPU-can-communicate-with-host-CPU-through.png" alt="">
   <figcaption> 
-  NVIDIA CUDA GPU memory hierarchy 
+  NVIDIA CUDA GPU memory hierarchy
+  [<a href="https://www.researchgate.net/publication/331453189_Acceleration_strategies_for_explicit_finite_element_analysis_of_metal_powder-based_additive_manufacturing_processes_using_graphical_processing_units">Ref</a>]
   </figcaption>
 </figure> 
-<!-- href="https://www.researchgate.net/publication/331453189_Acceleration_strategies_for_explicit_finite_element_analysis_of_metal_powder-based_additive_manufacturing_processes_using_graphical_processing_units"> -->
+<!-- href=""> -->
 
 
 Each thread has its own set of **registers** as well, which are the fastest memory available on the GPU (latency of a few cycles).
@@ -338,18 +339,16 @@ Molecular Dynamics (MD) is a technique often used for predicting the behavior of
 We will simulate a simple atomic system of an ideal gas, such as helium, in two dimensions, to minimize complex technical
 details that may require specialized expertise. As our main focus, Numba CUDA will be used to accelerate 
 the computationally demanding kernels, including the particle-particle interactions and time integration.
-
-
-MD simulation can be broken down into four main components: 
+MD simulation can be broken down into four main steps: 
 
 1. **System initialization** initializes the state of our collection of particles and choosing simulation settings. 
 2. **Atomic interactions** calculates the interactions between the particles, which determine how particles move in response to forces. 
 3. **Time integration** determines how the particles move over time via solving Newton's equations of motion for each particle.
 4. **Data collection:** saves a subset of the information which must be periodically extracted for on-the-fly or later analysis. 
 
-In the “System initialization” section, we will allocate the necessary arrays on the GPU. 
-In the “Atomic Interactions” and “Time Integration” sections, we will implement CUDA kernels to compute the forces and update the particles, respectively.
-
+In the system initialization step, we will allocate and initialize the necessary arrays on the GPU memory. 
+In the atomic Interactions and time Integration steps, we will implement CUDA kernels to compute the forces and update the particles, respectively.
+Finally, the last step transfers data to the host for further analysis.
 The flowchart below illustrates how the various components of MD simulations fit together.
 
 <figure style="width:40%" class="align-center">
@@ -380,7 +379,7 @@ This setup restricts the particles to movement in the x-y plane; motion along th
 
 #### Simulation parameters
 
-To begin, we need to import `numpy` and `numba.cuda`.We also import some types and define some aliases for type annotations, which helps to improve code readability.
+First of all, we need to import `numpy` and `numba.cuda`.We also import some types and define some aliases for type annotations, which helps to improve code readability.
 
 
 ```python
@@ -401,9 +400,9 @@ _float32_ requires half the number of bytes compared to _float64_, so it is more
 To be flexible, we defined an alias `FLOAT` which we can set to either float32 or float64.
 Additionally, we define the alias `Array` for multidimensional arrays that can hold elements of the type specified by `FLOAT`.
 
-Next, we define system parameters using a _named tuple_, which allowing us to create an immutable data structure with named fields.
+Next, we define system parameters using a **named tuple**, which allowing us to create an immutable data structure with named fields.
 This is quite similar to a *C*-like _struct_ and very useful for passing related data into Python functions with a single argument.
-More importantly, `numba.cuda` JIT-compiled functions accept `tuple` and named tuples as input argument.
+More importantly, `numba.cuda` JIT-compiled functions accept tuple and named tuples as input argument.
 
 
 ```python
@@ -439,15 +438,15 @@ params = SimulationParameters(
 )
 ```
 
-In our demo system these values don't have a real meaning since we don't use any units.
-In real-world simulations, these parameters have units and their value needs to be determined based on experiments or other types of calculations.
-
-
-{: .notice--info}
 To set the box length, we considered both the number of atoms and the spacing between nearest neighbors. 
 In general, atoms can be distributed evenly within a box using the formula $N^{1/dim} \times \text{atom spacing}$, 
 where N is the number of atoms and dim represents the dimension of the box. 
 In our case, since the dimension is 2, we use the square root.
+
+
+{: .notice--info}
+In our demo system these values don't have a real meaning since we don't use any units.
+In real-world simulations, these parameters have units and their value needs to be determined based on experiments or other types of calculations.
 
 
 #### Particles
@@ -469,8 +468,7 @@ class Particles(NamedTuple):
     force: Array
 ```
 
-We define two functions to set up the initial conditions: one for the positions and one for the velocities. 
-
+We implement two functions to set up the initial conditions: one for the positions and one for the velocities.
 The `initialize_position` function distributes the atoms on a square lattice in the 2D box, so that each atom is equidistant to its nearest neighbors.
 
 
@@ -524,8 +522,7 @@ def initialize_velocity(
 
 The velocities are adjusted by subtracting the mean velocity in each $x$ and $y$ directions (`axis=0`), centering the velocity distribution around zero, to ensure that the system's center of mass remains constant.
 
-
-With these two initialization functions in place, we can now proceed to create Particles as shown below:
+With these two initialization functions in place, we can now proceed to create `Particles` on the device as shown below:
 
 
 ```python
@@ -545,7 +542,6 @@ particles = Particles(position_dev, velocity_dev, force_dev)
 We initialize the position and velocity on the host and copy them to the device.
 The force array does not need initial values, as it will be computed later based on the atom positions. 
 This array is simply allocated on the device.
-
 For the device arrays we select *column major* (`F`) memory layout rather than the default *row major* (`C`). 
 For the CUDA kernels we will define, this alignment minimizes global memory accesses because threads in the same warp access contiguous memory addresses.
 This **coalesced** data arrangement will improve the performance on the GPU.
@@ -556,49 +552,11 @@ This **coalesced** data arrangement will improve the performance on the GPU.
 Potential energy determines how particles interact in any physical system. Like water that flows downhill, a system tends to evolve to a state of minimal potential. Forces experienced by particles can be derived from the **negative gradient** of the potential respect to their positions. Forces give rise to motion of the particles, and this will be a direction that reduces the potential. 
 To calculate the potential energy between atoms, we use a set of mathematical functions and parameters. It captures the effects of bonded and non-bonded interaction between atoms as a function of their separation distance. The parameters for a potential are obtained from either experimental data or quantum mechanical calculations.
 
-
-#### Potential energy
-
-Here, we consider *Lennard-Jones* (LJ) potential which is a simplified model used to describe the interaction between non-bonded atoms, for example a system of ideal gases. The Lennard-Jones potential energy assumes that two atoms repel each other when they are close too close to each other but attract when they are far apart. This model is given by the following equation:
-
-$$
-V(r) = 4 \epsilon \left[ (\frac{\sigma}{r})^{12} - (\frac{\sigma}{r})^{6} \right]
-$$
-
-<!-- Equation 1: Lennard-Jones potential between two atoms at distance $r$. -->
-
-The parameters $\epsilon$ and $\sigma$ are chosen based on experimental or computational data, and they depend on the types of atoms that are involved.
-$V(r)$ is the potential as a function of the distance $r$ between two particles. 
-The $\epsilon$ parameter is the depth of the potential well, indicating the strength of the attraction (see below Figure). 
-The $\sigma$ parameter is the distance at which the potential is zero, representing the effective diameter of the atoms.
- 
-<!---->
-<!-- <img src="images/lj_potential.png" width="500" /> -->
-<!---->
-<!-- Figure: The variation of Lennard-Jonnes potential between two atoms as function of the distance $r$.   -->
-<!---->
-
-{: .notice--info}
-For computational efficiency, a **cutoff radius** is often applied to restrict the range of interactions. 
-Interactions between particles beyond this cutoff are assumed to be zero, so calculations are only performed for particles within the specified range.
-
-
-For a system of $N$ atoms, the total potential $U$ is the sum of pairwise interactions over all atom pairs as follows:
-
-$$
-U = \sum_{i=1}^{N} \sum_{j>i}^{N} V(r_{ij}) 
-$$
-
-<!-- Equation 2: The total potential energy for system of $N$ atoms. -->
-
-Where, $r_{ij}$ is the distance between atom $i$ and atom $j$. 
-The sum ensures that each pair of particles is considered only once ($j>i$) and self-interactions are excluded ($i \neq j$).
-
+<!-- <div class="notice--info"> -->
 
 #### Forces 
 
-Forces between two atoms in a Lennard-Jones system can be derived from the negative _gradient_ of the potential with respect to the atom position $\vec{F} = -\vec{\nabla} V(r)$. 
-The force vector $\vec{F}_{ij}$​ on particle $i$ due to particle $j$ is given by:
+The force vector in a Lennard_Jones system $\vec{F}_{ij}$​ on particle $i$ due to particle $j$ is given by:
 <!-- & = - \vec{\nabla} V(r_{ij}) \\ -->
 
 $$
@@ -621,8 +579,7 @@ $$
 
 This will give us the net force acting on particle $i$ due to all other particles in the system while excluding the self interaction.
 
-Until now, we've derived the formulas needed to calculate the forces acting on each atom. 
-Next, we'll explore how we can use GPU to perform these calculations in parallel with Numba-CUDA.
+<!-- </div> -->
 
 
 #### Parallelizing force calculations
@@ -729,7 +686,6 @@ At this point, we have a ready-to-use kernel that calculates forces for all the 
 In the next section, we will learn how to update atomic positions and velocities for a next time step.
 
 
-
 ### 3. Time integration 
 
 *Time integrator* updates the positions and velocities of atoms as time in the simulation progresses.
@@ -817,9 +773,8 @@ def verlet_integration_velocity(
 ### 4. Data collection
 
 A large amount of data is generated from an MD system including atomic positions, velocities, and forces. This information can be used to track atomic motions, identify interactions, and calculate physical properties like energies, temperature, and pressure. However, so far we don’t have any way to save the output of our simulation. 
-
 To allow us to post-process and visualize our data, we define a `save` function which dumps the atomic position data into a file in the _XYZ_ format. 
-This is a standard way to represent molecular structures, making it compatible with various visualization tools such as the [visual molecular dynamics (VMD)](https://www.ks.uiuc.edu/Research/vmd/) package.
+This is a standard way to represent molecular structures, making it compatible with various visualization tools such as the [VMD](https://www.ks.uiuc.edu/Research/vmd/) package.
 
 
 ```python
@@ -832,7 +787,6 @@ def save(position: Array, file: TextIO) -> None:
 ```
 
 The line with `file.flush()` ensures that all data is immediately written to the file.
-
 Additionally, we calculate temperature ($T$) which is directly related to the average kinetic energy of the atoms within the system.
 
 $$
@@ -843,7 +797,6 @@ $$
 
 This equation calculates the average kinetic energy of atoms in a system. 
 $\vec{v}_i$ represents the velocity of atom number *i*, and *m* is the mass which we have assumed to be equal to $1.0$. 
-
 Calculating the temperature of the system is done with the `get_temperature` function as follows:
 
 
@@ -897,7 +850,6 @@ def simulate(
 This function simulates the system for predefined number of time steps, allowing the particle positions to evolve in accordance with the Lennard Jones potential. 
 Over time, the system tends to reach an equilibrium state where properties (i.e., temperature) stabilize. 
 We also collect properties like position of atoms and temperature during the simulation.
-
 We simulate the system for the next 1000 time steps and collecting current temperature and save atom positions every $100$ steps. 
 
 
@@ -922,7 +874,6 @@ Done.
 ```
 
 
-
 {: .notice--info}
 A complete working example of the GPU-accelerated MD simulator is provided in [this](https://github.com/PacktPublishing/GPU-Accelerated-Computing-with-Python-3-and-CUDA/blob/main/chapter_13/chapter_13_code.ipynb) jupyer notebook.
 
@@ -944,7 +895,7 @@ The GPU version was run on *A100*, a data center GPU, and additionally *RTX Ti 2
 The following figure shows the elapsed runtime. 
 Note that the y axis is logarithmically scaled, and precision is in `float64`.
 
-<figure style="width:70%" class="align-center">
+<figure style="width:60%" class="align-center">
   <img src="/assets/md-numba-cuda/benchmarks.png" alt="">
   <figcaption> 
   Our MD simulation benchmark runs on a different system for 1,000 time steps
@@ -962,6 +913,9 @@ GPU.
 At the *algorithmic level*, we have used a basic approach to identify neighboring atoms by looping over all atoms, resulting in a computational complexity of $O(N^2)$, where $N$ is the number of atoms. 
 Advanced methods like *neighbor lists* together with *linked-cell* algorithms can reduce this complexity to $O(N)$, enabling MD simulations to efficiently handle larger systems with millions of atoms.
 I'll discuss the *linear scaling MD* in a separate post in near future.
+
+
+I hope this post provides a useful starting point for exploring GPU programming with Numba and CUDA. 
 
 
 ## Further reading
