@@ -30,6 +30,10 @@ read_time: true
   </figcaption>
 </figure> 
 
+
+> In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how [JAX](https://docs.jax.dev/en/latest/index.html) can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
+
+
 Have you ever wished you could write *CUDA kernels* without diving into C/C++?
 **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)** allows you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts, all while keeping the syntax simple.
@@ -38,13 +42,12 @@ Numba compiles Python code, through LLVM and NVIDIA's NVVM compiler infrastructu
 Despite its excellent potential, Numba-CUDA remains in my opinion underappreciated. 
 Many colleagues I’ve spoken with aren’t even aware it exists. 
 
-In this post, I’ll discuss fundamentals of CUDA kernels with Numba-CUDA (Part 1) and then put discussed concepts into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator (Part 2).
+In this post, I’ll discuss fundamentals of CUDA kernels with Numba-CUDA and then put discussed concepts into practice by implementing a GPU-accelerated *Molecular Dynamics* simulator.
 
-> In my [previous post](https://hghcomphys.github.io/why-you-should-learn-jax/), I showed how [JAX](https://docs.jax.dev/en/latest/index.html) can be used to implement a GPU-accelerated MD simulator relying on *just-in-time compilation*, *automatic vectorization*, and *automatic differentiation*.
 
 Let's get started!
 
-## **Part 1:** Writing and Executing CUDA kernel in Python with Numba-CUDA
+## Writing and Executing CUDA kernel in Python with Numba-CUDA
 
 To begin, I'll cover basics of the **CUDA execution model** and **memory hierarchy**. 
 If you're already familiar with parallel programming on CPUs, many of the core concepts will feel familiar, making the transition to CUDA relatively straightforward.
@@ -63,7 +66,7 @@ For example, threads within a block share fast on-chip memory and can communicat
 
 Diagram below shows an illustration of threads and blocks in a 1D grid:
 
-<figure style="width: 50%" class="align-center">
+<figure style="width: 60%" class="align-center">
   <img src="/assets/md-numba-cuda/cuda-kernel.png" alt="">
   <figcaption>
   CUDA grid in 1D including threads and blocks
@@ -329,7 +332,7 @@ Now, let's put what have discussed into practice by creating a GPU-accelerated m
 We'll begin with a high-level overview of how MD simulation works, then we will implement the necessary components step by step while using the features provided by Numba-CUDA.
 
 
-## **Part 2:** Implementing a GPU-Accelerated Molecular Dynamics Simulator
+## Implementing a GPU-Accelerated Molecular Dynamics Simulator
 
 <!-- ### How MD simulations work -->
 
