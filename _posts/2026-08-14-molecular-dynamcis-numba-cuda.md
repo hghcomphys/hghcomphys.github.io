@@ -30,7 +30,6 @@ read_time: true
   </figcaption>
 </figure> 
 
-
 Have you ever wished you could write *CUDA kernels* without diving into C/C++?
 **[Numba-CUDA](https://nvidia.github.io/numba-cuda/)** allows you write custom CUDA kernels directly in Python, giving you fine-grained control over GPU execution, 
 from data movement to memory layouts, all while keeping the syntax simple.
@@ -250,11 +249,10 @@ These can be beneficial for specific access patterns but are generally less impo
 Diagram below shows CUDA memory hierarchy in a grid as follows:
 
 
-<figure style="width:60%" class="align-center">
-  <img src="https://www.researchgate.net/publication/331453189/figure/fig6/AS:960232402464789@1605948653309/CUDA-hierarchical-memory-model-device-GPU-can-communicate-with-host-CPU-through.png" alt="">
+<figure style="width:70%" class="align-center">
+  <img src="/assets/md-numba-cuda/gpu_memory_hierarchy.png" alt="">
   <figcaption> 
   NVIDIA CUDA GPU memory hierarchy
-  [<a href="https://www.researchgate.net/publication/331453189_Acceleration_strategies_for_explicit_finite_element_analysis_of_metal_powder-based_additive_manufacturing_processes_using_graphical_processing_units">Ref</a>]
   </figcaption>
 </figure> 
 <!-- href=""> -->
@@ -896,7 +894,6 @@ The following figure shows the elapsed runtime.
 Note that the y axis is logarithmically scaled, and precision is in `float64`.
 
 <figure style="width:60%" class="align-center">
-  <img src="/assets/md-numba-cuda/benchmarks.png" alt="">
   <figcaption> 
   Our MD simulation benchmark runs on a different system for 1,000 time steps
   </figcaption>
