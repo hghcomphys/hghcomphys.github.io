@@ -894,6 +894,7 @@ The following figure shows the elapsed runtime.
 Note that the y axis is logarithmically scaled, and precision is in `float64`.
 
 <figure style="width:60%" class="align-center">
+  <img src="/assets/md-numba-cuda/benchmarks.png" alt="">
   <figcaption> 
   Our MD simulation benchmark runs on a different system for 1,000 time steps
   </figcaption>
