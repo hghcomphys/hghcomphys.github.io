@@ -52,7 +52,7 @@ Let's get started!
 To begin, I'll cover basics of the **CUDA execution model** and **memory hierarchy**. 
 If you're already familiar with parallel programming on CPUs, many of the core concepts will feel familiar, making the transition to CUDA relatively straightforward.
 
-### How CUDA execution model works
+### How CUDA execution model enables parallelism
 
 GPU speed up calculations through massive parallelism, where a large task is divided into smaller subtasks.
 These subtasks are distributed across hundreds or thousands of GPU cores and executed concurrently.
@@ -322,10 +322,11 @@ This is particularly useful for operations such as histograms, reductions, and c
 
 
 {: .notice--info}
-Numba also **interoperates** with other GPU-enabled libraries such as [CuPy](https://cupy.dev/)
+Numba also allows **interoperability** between Numba device array and other GPU-enabled libraries such as [CuPy](https://cupy.dev/)
 <!-- and [PyTorch](https://pytorch.org/),  -->
-enabling data to be exchanged without copying it back to the CPU. 
+enabling data to be exchanged without copying it back to the CPU (zero-copy). 
 This makes it possible to combine custom CUDA kernels written in Python with high-level GPU libraries in a single application.
+Example of zero-copy conversion from a Numba device array to a CuPy array: `x_cupy = cupy.asarray(x_numba)`.
 
 
 Now, let's put what have discussed into practice by creating a GPU-accelerated molecular dynamics (MD) simulator which is used for studying materials at the atomic scale. 
@@ -348,7 +349,7 @@ MD simulation can be broken down into four main steps:
 4. **Data collection:** saves a subset of the information which must be periodically extracted for on-the-fly or later analysis. 
 
 In the system initialization step, we will allocate and initialize the necessary arrays on the GPU memory. 
-In the atomic Interactions and time Integration steps, we will implement CUDA kernels to compute the forces and update the particles, respectively.
+In the atomic interactions and time integration steps, we will implement CUDA kernels to compute the forces and update the particles, respectively.
 Finally, the last step transfers data to the host for further analysis.
 The flowchart below illustrates how the various components of MD simulations fit together.
 
@@ -555,9 +556,9 @@ To calculate the potential energy between atoms, we use a set of mathematical fu
 
 <!-- <div class="notice--info"> -->
 
-#### Forces 
+#### Lennard-Jones forces 
 
-The force vector in a Lennard_Jones system $\vec{F}_{ij}$​ on particle $i$ due to particle $j$ is given by:
+The force vector in a Lennard-Jones system $\vec{F}_{ij}$​ on particle $i$ due to particle $j$ is given by:
 <!-- & = - \vec{\nabla} V(r_{ij}) \\ -->
 
 $$
@@ -583,7 +584,7 @@ This will give us the net force acting on particle $i$ due to all other particle
 <!-- </div> -->
 
 
-#### Parallelizing force calculations
+#### Parallelizing the force calculations
 
 We will write a CUDA kernel to calculate forces for each particle in parallel by mapping each calculation onto a separate thread. 
 This is feasible because force calculations for individual atoms are independent and can be easily executed as *embarrassingly parallel* tasks. 
@@ -692,6 +693,8 @@ In the next section, we will learn how to update atomic positions and velocities
 *Time integrator* updates the positions and velocities of atoms as time in the simulation progresses.
 In principle it numerically solves Newton's equations of motion for each atom in the system.
 
+#### *Verlet* integrator 
+
 The _Verlet_ algorithm is one of the simplest and most commonly used time integrators in MD simulations because of its simplicity, computational efficiency, and numerical stability.
 In Verlet integration the new position $\vec{r}(t+\delta t)$ of a particle is computed based on its current and previous positions as follows:
 
@@ -717,7 +720,7 @@ The positions and velocities for all atoms are updated, and the algorithm procee
 This process repeats, with forces recalculated at each step to gradually build the trajectory of the particles.
 
 
-#### Parallelizing *Verlet* integrator
+#### Parallelizing the integrator
 
 We'll follow the same approach to speed up the time integration as we used to calculate the forces: we parallelize over the all the atoms.
 CUDA kernel below updates the position of atoms:
@@ -916,9 +919,6 @@ Advanced methods like *neighbor lists* together with *linked-cell* algorithms ca
 I'll discuss the *linear scaling MD* in a separate post in near future.
 
 
-I hope this post provides a useful starting point for exploring GPU programming with Numba and CUDA. 
-
-
 ## Further reading
 
 There are many additional topics that we have not covered in this post. 
@@ -939,3 +939,7 @@ If you’re interested in learning more about GPU programming and scientific com
 {: .notice--info}
 The example notebooks associated with this book is openly available on [GitHub](https://github.com/PacktPublishing/GPU-Accelerated-Computing-with-Python-3-and-CUDA).
 
+
+I hope this post provides a useful starting point for exploring GPU programming with Numba and CUDA. 
+
+Thank you for reading!
