@@ -24,7 +24,8 @@ author_profile: true
 ### *Research Scientist*
 **IMEC, Belgium | 2026 – Present**
 
-- **IMPACT:** *Machine-learning molecular dynamics* simulations of biomolecular systems for drug discovery.
+- **IMPACT:** Developing high-throughput computational methods based on MM/GBSA to calculate protein–ligand  binding affinities for structure-based drug discovery. 
+binding affinities for structure-based drug discovery.
 <!-- - **Skills:** Molecular simulations, Deep learning, GPU-computing -->
 
 - **XTCO:** *Low-level profiling* and characterization of LLM workloads on GPUs to improve analytical performance models for memory-centric hardware design. 
@@ -53,7 +54,7 @@ Delivering internal training sessions to researchers.
 
 - Conducting research on *2D material membranes* through the implementation of *molecular dynamics* simulations based on *machine learning* techniques
 <a href="https://github.com/hghcomphys/files-h2o-hbn-nnp">
-  <i class="fab fa-github"></i> Github
+  <i class="fab fa-github"></i>GitHub
 </a>.
 <!-- - **Skills:** LAMMPS, VASP, RuNNer, N2P2 -->
 - Implementing a basic Python tool to simplify the development and validation of *neural network potentials*.
@@ -71,24 +72,17 @@ Delivering internal training sessions to researchers.
 
 ## Education
 
-### *PhD, Computational Condensed Matter Physics*
-**University of Antwerp, Belgium | 2015 – 2019**
+- **PhD, Computational Condensed Matter Physics** <br>
+University of Antwerp, Belgium | 2015 – 2019 <br>
+[Thesis](https://repository.uantwerpen.be/docman/irua/74d011/160548.pdf): Graphene-based Membranes and Nanoconfined Water: Molecular Dynamics Simulation Study
 
-**[Thesis](https://repository.uantwerpen.be/docman/irua/74d011/160548.pdf):** Graphene-based Membranes and Nanoconfined Water: Molec-
-ular Dynamics Simulation Study
+- **MSc, Quantum Computing Physics** <br>
+Sharif University of Technology, Iran | 2008 – 2011 <br>
+Thesis: Quantum Walk Application in Search Algorithms
 
-
-### MSc, Quantum Computing Physics
-**Sharif University of Technology, Iran | 2008 – 2011**
-
-**Thesis:** Quantum Walk Application in Search Algorithms Iran
-
-
-### BSc, Physics
-**Guilan University, Iran | 2004 - 2008**
-
-**Thesis:** Binding Energy and Excitonic States in Double Quantum Wells GaAs-
-AlGaAs in Homogeneous Magnetic Field
+- **BSc, Physics** <br>
+Guilan University, Iran | 2004 - 2008 <br>
+Thesis: Binding Energy and Excitonic States in Double Quantum Wells *GaAs-AlGaAs* in Homogeneous Magnetic Field
 
 
 
@@ -111,7 +105,7 @@ Nature Communications, impact factor 14.7 (2017)*<br>
 
 ## Book
 
-### *GPU-Accelerated Computing with Python 3 and CUDA*
+**GPU-Accelerated Computing with Python 3 and CUDA** <br>
 *Niels Cautaerts | Hossein Ghorbanfekr*, Packt Publishing, 2026  
 ISBN: 978-1803248103 
 <!-- [Available on Amazon](https://a.co/d/03VXXelq) -->
@@ -122,21 +116,17 @@ ISBN: 978-1803248103
 
 ## Independent Projects 
 
-- **Pantea:** 
+- [**Pantea:**](https://github.com/hghcomphys/pantea)
 A Python tool for ML-based interatomic potentials based on JAX.
-[GitHub](https://github.com/hghcomphys/pantea)
 <!-- **Skills:** Python, JAX, Flax, Optax   -->
-- **NNP:**
-A C++ implementation of neural network potentials (NNP) for MD simulations.
-[GitHub](https://github.com/hghcomphys/nnp)
-<!-- **Skills:** C++, OpenNN, Make   -->
-- **LinearMD:**
+- [**LinearMD:**](https://github.com/hghcomphys/linear-md)
 A linear-scaling molecular dynamics simulation code built from scratch.
-[GitHub](https://github.com/hghcomphys/linear-md)
 <!-- **Skills:** C++, Numba, JIT Compilation   -->
-- **GPUtop:**
+- [**NNP:**](https://github.com/hghcomphys/nnp)
+A C++ implementation of neural network potentials (NNP) for MD simulations.
+<!-- **Skills:** C++, OpenNN, Make   -->
+- [**GPUtop:**](https://github.com/hghcomphys/gpu-top)
 A customized command-line tool for monitoring GPU utilization.
-[GitHub](https://github.com/hghcomphys/gpu-top)
 <!-- **Skills:** Slurm, TUI   -->
 
 
