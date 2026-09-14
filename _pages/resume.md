@@ -25,7 +25,6 @@ author_profile: true
 **IMEC, Belgium | 2026 – Present**
 
 - **IMPACT:** Developing high-throughput computational methods based on MM/GBSA to calculate protein–ligand  binding affinities for structure-based drug discovery. 
-binding affinities for structure-based drug discovery.
 <!-- - **Skills:** Molecular simulations, Deep learning, GPU-computing -->
 
 - **XTCO:** *Low-level profiling* and characterization of LLM workloads on GPUs to improve analytical performance models for memory-centric hardware design. 
