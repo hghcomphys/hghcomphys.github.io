@@ -22,7 +22,7 @@ show_date: true
 read_time: true
 ---
 
-<figure style="width: 80%" class="align-center">
+<figure style="width: 90%" class="align-center">
   <img src="/assets/linear-md/cover.png" alt="">
   <figcaption> 
   </figcaption>
@@ -34,16 +34,12 @@ in comparison to my [simple MD](https://github.com/hghcomphys/simulational-physi
 These methods have been shown reducing the computational complexity of force calculations from O(N²) to approximately O(N) for short-range interactions, 
 where N is the number of atoms in the system.
 The secondary goal is to showcase that a Python implementation using [Numba](https://numba.pydata.org/) compiler could be an alternative to C++ for scientific computing, in my opinion, offering a productive development experience without compromising much of performance.
-For this, I will simulate particles in a 3D simulation box (as shown in figure below) and compute their trajectories over time.
-
-<figure style="width: 500px" class="align-center">
-  <img src="https://github.com/hghcomphys/linear-md/raw/master/benchmark/system.png" alt="">
-  <figcaption>
-Illustration of 4000 atoms in a simulation box.
-  </figcaption>
-</figure> 
+For this, I will simulate particles in a simulation box and compute their trajectories over time.
 
 Let's get started!
+
+<!-- {: .notice--info}
+The Jupyter notebook containing the example codes from this post is available [here](https://github.com/hghcomphys/linear-md/blob/post/post.ipynb) -->
 
 ## Why linear-scaling MD matters 
 
@@ -235,6 +231,13 @@ with open(filename) as f:
 atoms_ase.set_cell(box)
 atoms_ase.set_pbc(True)
 ```
+
+<figure style="width: 30%" class="align-center">
+  <img src="https://github.com/hghcomphys/linear-md/raw/master/benchmark/system.png" alt="">
+  <figcaption>
+Illustration of 4000 atoms in a simulation box.
+  </figcaption>
+</figure> 
 
 <!-- ADD_REF_TO_GENERATE_LATTICE -->
 
@@ -1238,5 +1241,7 @@ Feel free to check out my GitHub repository where you can find Python and C++ im
 </a>
 </p>
 
+{: .notice--info}
+The Jupyter notebook containing the example codes from this post is available [here](https://github.com/hghcomphys/linear-md/blob/post/post.ipynb)
 
 I hope you find this post helpful and thank you for reading!
