@@ -199,16 +199,6 @@ This assigns Maxwell-Boltzmann velocities corresponding to 60 Kelvin temperature
 
 
 ```python
-# atoms_ase = read("argon.xyz")
-# with open("argon.xyz") as f:
-#     f.readline()
-#     box = np.fromstring(f.readline(), sep=" ").reshape(3, 3)
-# atoms_ase.set_cell(box)
-# atoms_ase.set_pbc(True)
-```
-
-
-```python
 ATOMIC_MASS = {"Ar": 40.0}  # amu
 atoms_ase = bulk("Ar", "fcc", a=5.385, cubic=True).repeat((8, 8, 8))
 MaxwellBoltzmannDistribution(
@@ -232,7 +222,7 @@ atoms_ase.set_cell(box)
 atoms_ase.set_pbc(True)
 ```
 
-<figure style="width: 30%" class="align-center">
+<figure style="width: 50%" class="align-center">
   <img src="https://github.com/hghcomphys/linear-md/raw/master/benchmark/system.png" alt="">
   <figcaption>
 Illustration of 4000 atoms in a simulation box.
