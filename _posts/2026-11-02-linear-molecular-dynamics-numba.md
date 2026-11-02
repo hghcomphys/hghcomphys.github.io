@@ -22,18 +22,18 @@ show_date: true
 read_time: true
 ---
 
-<figure style="width: 100%" class="align-center">
+<figure style="width: 80%" class="align-center">
   <img src="/assets/linear-md/cover.png" alt="">
   <figcaption> 
   </figcaption>
 </figure> 
 
-In this post, I will show how to implement a **linear-scaling** molecular dynamics (MD) simulator.
+This post will attempt to show how to implement a **linear-scaling** molecular dynamics (MD) simulator.
 The main goal is to improve the computational complexity using **cell list** and **neighbor list** methods, 
 in comparison to my [simple MD](https://github.com/hghcomphys/simulational-physics/tree/master/simple_md) implementation. 
 These methods have been shown reducing the computational complexity of force calculations from O(N²) to approximately O(N) for short-range interactions, 
 where N is the number of atoms in the system.
-My secondary goal is to showcase that a Python implementation using [Numba](https://numba.pydata.org/) compiler could be an alternative to C++ for scientific computing, in my opinion, offering a productive development experience without compromising much of performance.
+The secondary goal is to showcase that a Python implementation using [Numba](https://numba.pydata.org/) compiler could be an alternative to C++ for scientific computing, in my opinion, offering a productive development experience without compromising much of performance.
 For this, I will simulate particles in a 3D simulation box (as shown in figure below) and compute their trajectories over time.
 
 <figure style="width: 500px" class="align-center">
@@ -1240,8 +1240,3 @@ Feel free to check out my GitHub repository where you can find Python and C++ im
 
 
 I hope you find this post helpful and thank you for reading!
-
-
-```python
-
-```
