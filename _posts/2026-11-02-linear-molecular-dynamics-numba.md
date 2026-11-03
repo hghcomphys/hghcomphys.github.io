@@ -1,5 +1,5 @@
 ---
-title: "Building a Linear-Scaling Molecular Dynamics Simulator in Python with C++-Competitive Performance"
+title: "Building a Linear-Scaling Molecular Dynamics Simulator in Python with C++ Competitive Performance"
 categories:
   - Python 
 tags:
@@ -7,6 +7,8 @@ tags:
   - MolecularDynamics
   - Numba
   - JIT
+  - CellList
+  - NeighborList
 header:
   image: &image "/assets/linear-md/cover.png"
   caption: ""
@@ -22,14 +24,14 @@ show_date: true
 read_time: true
 ---
 
-<figure style="width: 90%" class="align-center">
+<figure style="width: 100%" class="align-center">
   <img src="/assets/linear-md/cover.png" alt="">
   <figcaption> 
   </figcaption>
 </figure> 
 
 This post will attempt to show how to implement a **linear-scaling** molecular dynamics (MD) simulator.
-The main goal is to improve the computational complexity using **cell list** and **neighbor list** methods, 
+The main goal is to improve the computational complexity using **cell-list** and **neighbor-list** methods, 
 in comparison to my [simple MD](https://github.com/hghcomphys/simulational-physics/tree/master/simple_md) implementation. 
 These methods have been shown reducing the computational complexity of force calculations from O(N²) to approximately O(N) for short-range interactions, 
 where N is the number of atoms in the system.
@@ -41,7 +43,7 @@ Let's get started!
 <!-- {: .notice--info}
 The Jupyter notebook containing the example codes from this post is available [here](https://github.com/hghcomphys/linear-md/blob/post/post.ipynb) -->
 
-## Why linear-scaling MD matters 
+## Importance of linear-scaling MD 
 
 A simple MD implementation typically results in O(N²) computational complexity.
 This scaling arises because force acting on each atom must be computed by considering its interaction with every other atom. 
@@ -61,31 +63,31 @@ This approximation is particularly effective for short-range interactions, whose
 The *Lennard-Jones* potential is a classic example of a short-range interaction that can be efficiently truncated using a cutoff without significantly affecting simulation accuracy.
 While a cutoff reduces the number of force evaluations, it still does not by itself solve the problem of identifying neighboring atoms. 
 A naive neighbor-search algorithm still requires comparing every atom against every other atom at each simulation step, resulting in an O(N²) search cost. 
-For large systems, this neighbor-finding process can become just as expensive as the force calculations themselves.
+For large systems, this search can become just as expensive as the force calculations themselves.
 
 <!-- ADD_MD_FLOWCHART_WITH_NEIGHBORS -->
 
-## Neighbor search algorithms
+## Neighbor-search algorithms
 
 Several algorithms have been separately introduced to overcome the quadratic computational cost 
-and most modern MD packages use combination of cell list and neighbor list for rapidly finding neighbors.
+and most modern MD packages use combination of cell-list and neighbor-list methods for rapidly finding neighbors.
 Together, these methods reduce the cost of neighbor searching from O(N²) to approximately O(N) in practice, 
 which enable simulations of systems containing hundreds of thousands or even millions of atoms.
-An alternative to cell lists is the use of general-purpose spatial trees, such as **KD-Tree search**. 
+An alternative to cell-list is the use of general-purpose spatial trees, such as **KD-Tree search**. 
 These methods recursively partition space into hierarchical regions and allowing nearby particles to be located without scanning the entire system.
-For systems with approximately uniform density, their O(N logN) scaling is typically slower of cell list method.
+For systems with approximately uniform density, their O(N logN) scaling is typically slower of the cell-list.
 
-In what follows, I will focus on cell list and neighbor list core concepts 
+In what follows, I will focus on cell-list and neighbor-list core concepts 
 showing how their combination forms the foundation of efficient modern MD simulations.
 
-### Cell List method 
+### Cell-List method 
 
 A cell list **partitions** the simulation box into small spatial regions.
 This allows atoms to search for neighbors only within nearby cells instead of the entire simulation box. 
 Suppose we have N=100,000 atoms.
 A naive neighbor search would require N(N-1)/2 pair wise distance which mean $5 \times 10^9$ comparisons per timestep.
 Most of these comparison are wasted because the majority of atom pairs are much further apart than the cutoff radius and therefore do no interact.
-Cell list eliminates these unnecessary checks.
+Utilizing cell-list eliminates these unnecessary checks.
 <!-- Atoms are assigned to cells based on their positions. -->
 
 Figure below shows an illustration of particles in a simulation box (2D) where regions are partitioned in each dimension.
@@ -93,7 +95,7 @@ Figure below shows an illustration of particles in a simulation box (2D) where r
 <figure style="width: 50%" class="align-center">
   <img src="/assets/linear-md/cell-list-schematic.drawio.png" alt="">
   <figcaption>
-  Cell list method for 2D simulation box.
+  Cell-list method for 2D simulation box.
   </figcaption>
 </figure> 
 
@@ -107,7 +109,7 @@ This significantly reduces the number of distance calculations compared to a bru
 Each cell stores the number of atoms it contains and a list of the corresponding atom indices. 
 Atoms are assigned to cells according to their positions within the simulation box which is partitioned in space.
 
-## Neighbor list method
+## Neighbor-list method
 
 Cell list is often not used directly for force calculations.
 It only helps to find atoms near to specific atom however rebuilding this information every time step still cost time. 
@@ -122,7 +124,7 @@ Rebuilding the list when needed as atoms have moved too much.
 <!-- <figure style="width: 70%" class="align-center">
   <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fsergio-santos-group.github.io%2FProtoSyn.jl%2Fstable%2Fassets%2FProtoSyn-verlet-list.png&f=1&nofb=1&ipt=02415014a131c8f7fdc87e8756552ce6b117b4ef6165dac0676a8d8f05280e9d" alt="">
   <figcaption>
-  Neighbor list method.
+  Neighbor-list method.
   </figcaption>
 </figure>  -->
 
@@ -305,7 +307,7 @@ particles = Particles(
 # particles
 ```
 
-The `position_old` array is an auxiliary array used to store the atomic positions at the time of the last neighbor-list update. 
+The `position_old` array is an auxiliary array used to store the atomic positions at the time of the last neighbor list update. 
 It will later be used to determine when atoms have moved sufficiently to require rebuilding the neighbor list, which I will discuss when implementing the neighbor-list update routines.
 
 ### Initializing neighbors 
@@ -318,9 +320,9 @@ These data structures reduce the number of pairwise distance evaluations and imp
 I'll first discuss initializing the cell and neighbor data structures. 
 Then, I'll cover how these structures are updated as the simulation progresses and atomic positions evolve over time.
 
-#### Cell list
+#### Cell-list
 
-We define again cell list as a named tuple as follows: 
+We define again `CellList` as a named tuple as follows: 
 
 
 ```python
@@ -336,7 +338,7 @@ This structure allows identification of nearby atoms by searching only neighbori
 
 <!-- ADD_DIAGRAM_? -->
 
-Function below initializes cell list data structure based on given atom positions and simulation box dimension.
+Function below initializes `CellList` data structure based on given atom positions and simulation box dimension.
 
 
 ```python
@@ -386,11 +388,11 @@ The function then allocates:
 - `sizes`: the number of cells along the x, y, and z directions.
 
 Finally, these arrays are packaged into a `CellList` object and returned. 
-<!-- At this stage, the data structures are only allocated; the assignment of atoms to cells is performed later when the cell list is built or updated. -->
+<!-- At this stage, the data structures are only allocated; the assignment of atoms to cells is performed later when the cell-list is built or updated. -->
 
 #### Neighbor list
 
-Similarly, we define neighbor list as follows:
+Similarly, we define `NeighborList` as follows:
 
 
 ```python
@@ -403,7 +405,7 @@ A `NeighborList` stores the set of nearby atoms that lie within the cutoff.
 `num_neighbors_per_atom` records how many neighbors each atom has, while `neighbor_index` contains the corresponding neighbor indices. 
 During force evaluation, interactions are computed only with these precomputed neighbors, reducing the cost from O(N²) to approximately O(N) for typical molecular dynamics systems.
 
-Function below initializes the neighbor list data structure: 
+Function below initializes the `NeighborList` data structure: 
 
 
 ```python
@@ -433,9 +435,9 @@ it allocates:
 
 <!-- The function then packages these arrays into a NeighborList object and returns it.  -->
 At this stage, the cell and neighbor lists are only allocated.
-We still need to assign atoms to the cell and neighbor lists later when they are built or updated. 
+We still need to assign atoms to them later when they are built or updated. 
 
-For simplicity, I define an utility function that initializes both the cell list and neighbor list in a single call. 
+For simplicity, I define an utility function that initializes both the cell and neighbor lists in a single call. 
 It allocates the required data structures by invoking `initialize_cell_list()` and `initialize_neighbor_list()`, prints basic information about the spatial decomposition (cell length and grid dimensions), and returns the resulting CellList and NeighborList objects.
 
 
@@ -474,7 +476,7 @@ Cell sizes: (4, 4, 4)
 We use again two utility functions for our Numba JIT compiled functions. 
 The `index3d` function converts a 3D cell coordinate (`ic[0]`, `ic[1]`, `ic[1]`) into a single linear (1D) index. 
 `nc` is number of cells in each dimension.
-It's commonly userd in cell-list in implementations to store a 3D grid in a flat array.
+It's commonly used in cell-list implementations to store a 3D grid in a flat array.
 
 
 ```python
@@ -620,7 +622,7 @@ ic2 = math.floor(position[n, 2] * nc[2] / length[2])
 
 The cell coordinates are converted to a linear index using `index3d()`, and the particle index is inserted into that cell's atom list.
 This structure divides the simulation domain into spatial bins, enabling neighbor searches to consider only nearby cells instead of all particle pairs. 
-As a result, the cost of neighbor-list construction is reduced from approximately O(N²) to O(N) for large systems.
+As a result, the cost of neighbor list construction is reduced from approximately O(N²) to O(N) for large systems.
 
 #### Updating neighbor list
 
@@ -663,13 +665,13 @@ The squared distance is then evaluated:
 r2 = dx * dx + dy * dy + dz * dz
 ```
 
-If the distance falls within the neighbor-list cutoff,
+If the distance falls within the neighbor list cutoff,
 
 ```python
 neighbor_cutoff2 = (cutoff + skin)^2
 ```
 
-the particles are added to each other's neighbor lists:
+the particles are added to each other's neighbor list:
 
 ```python
 neighbors.neighbor_index[ni, ...] = nj
@@ -700,7 +702,7 @@ for n in range(params.num_atoms):
 These reference positions are used to determine when the neighbor list must be rebuilt. 
 During subsequent timesteps, the maximum particle displacement relative to `position_old` is monitored. 
 Once particles have moved sufficiently, typically by more than half the skin distance, the neighbor list can no longer be guaranteed to contain all interacting pairs and must be reconstructed.
-By updating `position_old` after rebuilding the neighbor list, the simulation readjust a new reference configuration from which future particle displacements are measured.
+By updating `position_old` after rebuilding the list, the simulation readjust a new reference configuration from which future particle displacements are measured.
 
 Example below shows how to update cell and neighbor lists:
 
@@ -737,7 +739,7 @@ If the displacement of any atom exceeds this limit the function immediately sign
 If no particle exceeds the threshold, the function returns `False`, indicating that existing neighbor list remains valid.
 
 
-Now that the neighbor list is available, we proceed with calculating the forces between atoms.
+Now that the neighbor-list method is implemented, we proceed with calculating the forces between atoms.
 
 ### Force components and energy 
 
@@ -932,7 +934,7 @@ This completes the timestep and keeps the positions and velocities synchronized.
 
 ### Molecular dynamics simulation
 
-With all the components developed so far, including particle initialization, cell lists, neighbor lists, force computation, and *Verlet* integration, we now have everything needed to perform a complete molecular dynamics simulation. 
+With all the components developed so far, including particle initialization, cell-list, neighbor-list, force computation, and *Verlet* integration, we now have everything needed to perform a complete molecular dynamics simulation. 
 The `simulate` function serves as the main simulation driver, advancing the system for a specified number of timesteps while periodically reporting simulation statistics and maintaining the neighbor list.
 
 
@@ -995,7 +997,7 @@ cells, neighbors = initialize_neighbors(params, box)
 update_neighbors(particles, params, cells, neighbors)
 ```
 
-This creates the cell list and Verlet neighbor list based on the initial particle configuration. 
+This creates the cell-list and neighbor-list based on the initial particle configuration. 
 The initial forces are then evaluated using the neighbor list:
 
 ```python
@@ -1009,7 +1011,7 @@ Once the setup is complete, the main simulation loop advances the system for the
 for step in range(steps):
 ```
 
-At regular intervals specified by `log_frequency`, the simulation prints useful information, including temperature, kinetic energy, potential energy, total energy, the number of neighbor-list rebuilds, the average number of neighbors per particle, and the average number of atoms per cell. 
+At regular intervals specified by `log_frequency`, the simulation prints useful information, including temperature, kinetic energy, potential energy, total energy, the number of neighbor list rebuilds, the average number of neighbors per particle, and the average number of atoms per cell. 
 These metrics provide insight into both the physical evolution of the system and the performance of the neighbor-search data structures.
 
 Each timestep follows the standard Velocity Verlet integration scheme:
@@ -1064,7 +1066,7 @@ def save(particles: Particles, file: TextIO) -> None:
 ```
 
 The example below runs a MD simulation of 2048 particles for 1,001 timesteps. 
-During the run, the code periodically reports thermodynamic quantities, neighbor-list statistics, and cell-list occupancy, allowing the evolution of the system and the efficiency of the neighbor-search algorithm to be monitored. 
+During the run, the code periodically reports thermodynamic quantities, neighbor statistics, and cell occupancy, allowing the evolution of the system and the efficiency of the neighbor-search algorithm to be monitored. 
 The nearly constant total energy demonstrates the stability of the simulation and the correctness of the Velocity Verlet integration scheme.
 
 
@@ -1116,7 +1118,7 @@ Each data point corresponds to 1000 time steps.
   </figcaption>
 </figure> 
 
-The linear MD implementation shows perfect linear scaling, confirming the benefit of using cell lists and neighbor lists in reducing the complexity of short-range force calculations to roughly O(N). 
+The linear MD implementation shows perfect linear scaling, confirming the benefit of using cell-list and neighbor-list in reducing the complexity of short-range force calculations to roughly O(N). 
 As the number of atoms increases, the execution time difference between the optimized and simple MD implementations becomes increasingly pronounced, making the simple approach infeasible for large-scale simulations. 
 Additionally, the linear scaling curve indicates that the computational cost per atom remains almost constant with system size.
 
@@ -1209,14 +1211,14 @@ This provides detailed insights into CPU, memory, and Python vs. native executio
 
 
 The profiling results show that Numba achieves performance close to native C++ for this MD workload. 
-While the C++ implementation is approximately 1.7× faster, both versions exhibit identical scaling behavior because they implement the same neighbor list algorithm. 
+While the C++ implementation is approximately 1.7× faster, both versions exhibit identical scaling behavior because they implement the same neighbor-list algorithm. 
 The remaining performance gap can largely be attributed to the higher instruction count, lower instructions-per-cycle (IPC), and increased cache-miss rate observed in the Numba-generated code. 
 Nevertheless, the results demonstrate that Numba is capable of delivering near-native performance while retaining the productivity advantages of Python.
 
 
 ## Wrapping up
 
-In this post, we developed a molecular dynamics (MD) simulator based on the well-established cell-list and neighbor-list algorithms and applied it to a Lennard-Jones system with periodic boundary conditions. 
+In this post, we developed a molecular dynamics (MD) simulator based on the well known cell-list and neighbor-list algorithms and applied it to a Lennard-Jones system with periodic boundary conditions. 
 By comparing against a straightforward brute-force implementation, we demonstrated that the use of spatial decomposition and neighbor list yields the expected linear scaling with system size. 
 We further improved the computationally intensive parts of the code, including neighbor-list construction, force evaluation, and time integration, using Numba just-in-time (JIT) compiler. 
 The resulting implementation achieved performance approaching that of an equivalent C++ code while retaining the simplicity and flexibility of Python. 
