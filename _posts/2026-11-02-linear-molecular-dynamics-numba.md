@@ -745,7 +745,7 @@ Now that the neighbor-list method is implemented, we proceed with calculating th
 
 <!-- #### Lennard-Jones Force  -->
 
-The interaction between particles is modeled using the 12-6 Lennard-Jones (LJ) potential, which captures both short-range repulsion and longer-range attraction:
+The interaction between particles is modeled using the 12-6 Lennard-Jones (LJ) potential, which captures both short-range repulsion and attraction terms:
 
 $$
 U(r) = 4\epsilon \left[ \left(\frac{\sigma}{r}\right)^{12} - \left(\frac{\sigma}{r}\right)^6 \right]
@@ -856,8 +856,7 @@ force[ni, 0] += dx * fij
 force[nj, 0] -= dx * fij
 ```
 
-This exploits Newton's third law, $\mathbf{F}_{ij} = -\mathbf{F}_{ji}$, 
-letting a single pairwise calculation to update both particles simultaneously.
+This exploits Newton's third law, letting a single pairwise calculation to update both particles simultaneously.
 
 The following example computes the forces acting on all particles and accumulates the total Lennard-Jones potential energy using the precomputed neighbor list.
 
