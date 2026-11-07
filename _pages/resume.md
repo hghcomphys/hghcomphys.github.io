@@ -18,6 +18,11 @@ author_profile: true
 }
 </style>
 
+<!-- ## Profile -->
+
+Computational scientist with a PhD in Physics and expertise in **molecular dynamics**, **high-performance computing**, and **machine learning**. 
+Experienced in **GPU-accelerated computing** and  **developing computational tools** to address complex scientific challenges.
+
 
 ## Experience
 
@@ -129,9 +134,11 @@ A customized command-line tool for monitoring GPU utilization.
 <!-- **Skills:** Slurm, TUI   -->
 
 
-## Giving Courses 
+## Giving Courses
 
-[Python4HPC](https://github.com/hghcomphys/python4hpc), Advanced Python, HPC Cluster Introduction, and GPU-Computing in Python
+- [Python4HPC](https://github.com/hghcomphys/python4hpc), Advanced Python, HPC Cluster Introduction, and GPU-Computing in Python
+- GPU-accelerated computing with python and CUDA, Workshop, University of Antwerp 
+
 
 
 
