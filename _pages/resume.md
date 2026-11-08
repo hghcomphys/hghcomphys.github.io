@@ -136,9 +136,9 @@ A customized command-line tool for monitoring GPU utilization.
 
 ## Giving Courses
 
-- [Python4HPC](https://github.com/hghcomphys/python4hpc), Advanced Python, HPC Cluster Introduction, and GPU-Computing in Python
-- GPU-accelerated computing with python and CUDA, Workshop, University of Antwerp 
-
-
+- [Low-level GPU computing in Python](https://codeberg.org/din14970/GPU_computing_in_python_course) workshop, at University of Antwerp
+- [Python4HPC](https://github.com/hghcomphys/python4hpc) at vito & imec
+- Advanced Python session at vito & imec 
+- Intro session to SLURM HPC cluster at vito 
 
 
